@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>番茄钟 · 简化侧边栏</title>
+<title>番茄钟 · 简化版</title>
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
@@ -88,7 +88,7 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
 <body>
 <div class="wrap">
   <header>
-    <h1>番茄钟 · 简化侧边栏</h1>
+    <h1>番茄钟 · 简化版</h1>
     <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
   </header>
 
@@ -106,7 +106,6 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
       <button class="btn" id="resetBtn">重置</button>
       <button class="btn" id="fullscreenBtn">全屏</button>
       <button class="btn" id="themeToggleBtn">切换日夜</button>
-      <div style="margin-left:auto" class="small">周期: <span id="cycleCount">0</span></div>
     </div>
   </main>
 
@@ -134,7 +133,6 @@ const pauseBtn=document.getElementById('pauseBtn');
 const resetBtn=document.getElementById('resetBtn');
 const timeDisplay=document.getElementById('timeDisplay');
 const statusLabel=document.getElementById('statusLabel');
-const cycleDisplay=document.getElementById('cycleCount');
 const cycleSidebar=document.getElementById('cycleSidebar');
 const minutesSidebar=document.getElementById('minutesSidebar');
 const modeButtons=document.querySelectorAll('.mode-btn');
@@ -166,7 +164,6 @@ function tick(){
   else{
     if(currentMode==='focus') totalMinutes+=modes.focus;
     cycleCount++; 
-    cycleDisplay.textContent=cycleCount;
     cycleSidebar.textContent=cycleCount;
     minutesSidebar.textContent=totalMinutes;
     clearInterval(timer); running=false;
@@ -216,7 +213,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 // -------------------- 初始化 --------------------
 updateDisplay();
-cycleDisplay.textContent=cycleCount;
 cycleSidebar.textContent=cycleCount;
 minutesSidebar.textContent=totalMinutes;
 </script>
