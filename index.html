@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>番茄钟</title>
+<title>番茄钟 · 自动模式完整版</title>
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
@@ -95,7 +95,7 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
 <body>
 <div class="wrap">
   <header>
-    <h1>番茄钟</h1>
+    <h1>番茄钟 · 自动模式完整版</h1>
     <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
   </header>
 
@@ -127,20 +127,17 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
   </aside>
 </div>
 
-<!-- 音频文件 -->
 <audio id="alarmFocus" src="focus.mp3" preload="auto"></audio>
 <audio id="alarmShort" src="short.mp3" preload="auto"></audio>
 <audio id="alarmLong" src="long.mp3" preload="auto"></audio>
 
 <script>
-// -------------------- 核心变量 --------------------
 let running=false, timer=null, timeLeft=25*60;
-let cycleCount=0, totalMinutes=0;
+let cycleCount=0, totalMinutes=0, focusCount=0;
 const modes={focus:25, short:5, long:15};
 let currentMode='focus';
 let startTime=null, endTime=null;
 
-// -------------------- DOM --------------------
 const startBtn=document.getElementById('startBtn');
 const pauseBtn=document.getElementById('pauseBtn');
 const resetBtn=document.getElementById('resetBtn');
@@ -154,7 +151,6 @@ const alarmFocus=document.getElementById('alarmFocus');
 const alarmShort=document.getElementById('alarmShort');
 const alarmLong=document.getElementById('alarmLong');
 
-// -------------------- 更新显示 --------------------
 function updateDisplay(){
   let m=Math.floor(timeLeft/60), s=timeLeft%60;
   timeDisplay.textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
@@ -163,7 +159,6 @@ function updateDisplay(){
                          `长休息 (${modes.long} 分钟)`;
 }
 
-// -------------------- 切换模式 --------------------
 modeButtons.forEach(btn=>{
   btn.addEventListener('click',()=>{
     modeButtons.forEach(b=>b.classList.remove('active'));
@@ -172,10 +167,10 @@ modeButtons.forEach(btn=>{
     timeLeft=modes[currentMode]*60;
     updateDisplay();
     resetTimer();
+    focusCount=0; // 手动切换重置专注计数
   });
 });
 
-// -------------------- 计时 --------------------
 function startTimer(){
   if(!running){
     running=true;
@@ -216,17 +211,23 @@ function resetTimer(){
   updateDisplay();
   startBtn.style.display='inline-block';
   pauseBtn.style.display='none';
+  [alarmFocus, alarmShort, alarmLong].forEach(a=>{a.pause();a.currentTime=0;});
+}
 
-  // 停止所有铃声
-  [alarmFocus, alarmShort, alarmLong].forEach(alarm=>{
-    alarm.pause();
-    alarm.currentTime=0;
-  });
+function switchMode(mode){
+  currentMode = mode;
+  timeLeft = modes[mode]*60;
+  modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  updateDisplay();
+  startTimer();
 }
 
 function finishTimer(){
-  if(currentMode==='focus') totalMinutes+=modes.focus;
-  cycleCount++; 
+  if(currentMode==='focus'){ 
+    totalMinutes+=modes.focus; 
+    focusCount++;
+  }
+  cycleCount++;
   cycleSidebar.textContent=cycleCount;
   minutesSidebar.textContent=totalMinutes;
 
@@ -237,20 +238,26 @@ function finishTimer(){
   running=false;
   startBtn.style.display='inline-block';
   pauseBtn.style.display='none';
+
+  // 自动模式逻辑
+  if(currentMode==='focus'){
+    if(focusCount % 4 === 0){ switchMode('long'); }
+    else { switchMode('short'); }
+  } else {
+    switchMode('focus');
+  }
 }
 
-// -------------------- 按钮事件 --------------------
 startBtn.addEventListener('click', startTimer);
 pauseBtn.addEventListener('click', pauseTimer);
 resetBtn.addEventListener('click', resetTimer);
 
-// -------------------- 快捷键 --------------------
 document.addEventListener('keydown', e=>{
   if(e.code==='Space'){ e.preventDefault(); running?pauseTimer():startTimer(); }
   if(e.key==='r'||e.key==='R'){ resetTimer(); }
 });
 
-// -------------------- 全屏 --------------------
+// 全屏
 const fullscreenBtn=document.getElementById('fullscreenBtn');
 function toggleFullscreen(){
   if(!document.fullscreenElement){document.documentElement.requestFullscreen().then(()=>{fullscreenBtn.textContent='退出全屏';}).catch(console.error);}
@@ -260,7 +267,7 @@ fullscreenBtn.addEventListener('click', toggleFullscreen);
 document.addEventListener('keydown', e=>{ if(e.key==='f'||e.key==='F'){e.preventDefault(); toggleFullscreen(); }});
 document.addEventListener('fullscreenchange', ()=>{fullscreenBtn.textContent=document.fullscreenElement?'退出全屏':'全屏';});
 
-// -------------------- 日夜模式 --------------------
+// 日夜模式
 const themeBtn=document.getElementById('themeToggleBtn');
 function toggleTheme(){
   const current=document.documentElement.getAttribute('data-theme')||'dark';
@@ -274,10 +281,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   themeBtn.addEventListener('click', toggleTheme);
 });
 
-// -------------------- 初始化 --------------------
+// 初始化
 updateDisplay();
 cycleSidebar.textContent=cycleCount;
 minutesSidebar.textContent=totalMinutes;
 </script>
 </body>
-</html>
+</
