@@ -4,10 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pomodoro Timer</title>
-
-<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-
 <style>
 :root {
   --bg: #fefefe;
@@ -47,11 +44,8 @@ body {
   width: 100%;
   max-width: 450px;
 }
-@media(min-width:800px) {
-  .container { flex-direction: row; justify-content: center; gap: 50px;}
-}
 
-/* ===== Frosted Glass Cards ===== */
+/* ===== Frosted Glass Card ===== */
 .card {
   backdrop-filter: blur(12px) saturate(180%);
   background: rgba(255,255,255,0.2);
@@ -68,15 +62,12 @@ body {
 }
 
 /* ===== Sections ===== */
-.section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin: 8px 0;
-}
+.section { display:flex; align-items:center; justify-content:center; width:100%; margin:8px 0; }
 
 /* ===== Title ===== */
+.title {
+  flex-direction: column;
+}
 .title h1 {
   font-family: 'Poppins', sans-serif;
   font-size: 36px;
@@ -86,87 +77,64 @@ body {
   text-shadow: 0 2px 4px rgba(0,0,0,0.2);
   margin: 0;
 }
+.title .cycles {
+  font-size: 16px;
+  margin-top: 6px;
+  color: var(--text);
+  display:flex; align-items:center; gap:10px;
+}
 
 /* ===== Mode Buttons ===== */
-.mode-buttons {
-  gap: 10px;
-}
+.mode-buttons { gap:10px; }
 .mode-buttons button {
-  padding: 12px 0;
-  min-width: 100px;
-  font-size: 16px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  color: var(--btn-text);
-  background: var(--btn-bg);
-  transition: transform 0.1s, background 0.2s;
-  text-align: center;
-  flex: 1;
-  max-width: 140px;
+  padding:12px 0;
+  min-width:100px;
+  font-size:16px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  color:var(--btn-text);
+  background:var(--btn-bg);
+  transition:transform 0.1s, background 0.2s;
+  text-align:center;
+  flex:1;
+  max-width:140px;
 }
-.mode-buttons button.active { background: var(--focus);}
+.mode-buttons button.active { background: var(--focus); }
 .mode-buttons button:active { transform: scale(0.95); }
 
 /* ===== Timer ===== */
-.time {
-  font-size: 72px;
-  font-weight: bold;
-}
+.time { font-size:72px; font-weight:bold; }
 
 /* ===== Control Buttons ===== */
 .buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  display:flex; gap:10px; flex-wrap:wrap;
 }
 .buttons button {
-  padding: 12px 0;
-  min-width: 100px;
-  font-size: 16px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  color: var(--btn-text);
-  background: var(--btn-bg);
-  transition: transform 0.1s;
-  text-align: center;
-  flex: 1;
-  max-width: 140px;
+  padding:12px 0;
+  min-width:100px;
+  font-size:16px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  color:var(--btn-text);
+  background:var(--btn-bg);
+  transition:transform 0.1s;
+  text-align:center;
+  flex:1;
+  max-width:140px;
 }
 .buttons button:active { transform: scale(0.95); }
 
-/* ===== Sidebar ===== */
-.sidebar {
-  text-align: center;
-  margin-top: 15px;
-  width: 100%;
-}
-@media(min-width:800px) {
-  .sidebar { margin-top:0; }
-}
-.sidebar p, .sidebar button {
-  margin: 8px 0;
-  color: var(--text);
-}
-.sidebar button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 10px;
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  cursor: pointer;
-}
-
 /* ===== Footer ===== */
 .footer {
-  width: 100%;
-  text-align: center;
-  padding: 12px 0;
-  font-size: 14px;
-  color: var(--text);
-  opacity: 0.7;
-  margin-top: 15px;
+  width:100%;
+  text-align:center;
+  padding:12px 0;
+  font-size:14px;
+  color:var(--text);
+  opacity:0.7;
+  margin-top:15px;
 }
 
 /* ===== Overlay for sound activation ===== */
@@ -186,8 +154,14 @@ body {
 
 <div class="container">
   <div class="card main">
-    <!-- Title -->
-    <div class="section title"><h1>Pomodoro</h1></div>
+    <!-- Title + Cycles + Reset -->
+    <div class="section title">
+      <h1>Pomodoro</h1>
+      <div class="cycles">
+        <button id="resetStats" style="padding:4px 8px; font-size:14px;">Reset</button>
+        <span>Cycles: <span id="cycles">0</span></span>
+      </div>
+    </div>
 
     <!-- Mode Buttons -->
     <div class="section mode-buttons">
@@ -207,12 +181,6 @@ body {
       <button id="toggleTheme">Theme</button>
     </div>
   </div>
-
-  <div class="card sidebar">
-    <p>Cycles: <span id="cycles">0</span></p>
-    <p>Total Focus: <span id="minutes">0</span> min</p>
-    <button id="resetStats">Reset Stats</button>
-  </div>
 </div>
 
 <footer class="footer">
@@ -231,11 +199,11 @@ const resetBtn = document.getElementById('reset');
 const toggleThemeBtn = document.getElementById('toggleTheme');
 const modeButtons = document.querySelectorAll('.mode-buttons button');
 const cycleSidebar = document.getElementById('cycles');
-const minutesSidebar = document.getElementById('minutes');
 const alarmFocus = document.getElementById('alarmFocus');
 const alarmShort = document.getElementById('alarmShort');
 const alarmLong = document.getElementById('alarmLong');
 const overlay = document.getElementById('enableSoundOverlay');
+const resetStatsBtn = document.getElementById('resetStats');
 
 let currentMode='focus';
 let timeLeft=25*60;
@@ -244,9 +212,7 @@ let running=false;
 let focusCount=0;
 let modes={focus:25,short:5,long:15};
 let cycleCount=parseInt(localStorage.getItem('cycleCount'))||0;
-let totalMinutes=parseInt(localStorage.getItem('totalMinutes'))||0;
 cycleSidebar.textContent=cycleCount;
-minutesSidebar.textContent=totalMinutes;
 
 if('Notification' in window){ Notification.requestPermission(); }
 
@@ -292,11 +258,9 @@ function resetTimer(){
 
 function finishTimer(){
   if(currentMode==='focus'){
-    totalMinutes+=modes.focus; focusCount++; cycleCount++;
+    focusCount++; cycleCount++;
     localStorage.setItem('cycleCount',cycleCount);
-    localStorage.setItem('totalMinutes',totalMinutes);
     cycleSidebar.textContent=cycleCount;
-    minutesSidebar.textContent=totalMinutes;
     alarmFocus.currentTime=0; alarmFocus.play().catch(()=>{});
     notifyUser('Pomodoro','Focus finished! Take a break.');
     if(focusCount%4===0){ switchMode('long',true); }
@@ -328,13 +292,11 @@ startBtn.onclick=startTimer;
 pauseBtn.onclick=pauseTimer;
 toggleThemeBtn.onclick=()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'':'dark';};
 modeButtons.forEach(btn=>btn.addEventListener('click',()=>switchMode(btn.dataset.mode,false)));
-document.getElementById('resetStats').addEventListener('click',()=>{
-  if(confirm('Reset all stats?')){
-    cycleCount=0; totalMinutes=0;
+resetStatsBtn.addEventListener('click',()=>{
+  if(confirm('Reset all cycles?')){
+    cycleCount=0;
     localStorage.removeItem('cycleCount');
-    localStorage.removeItem('totalMinutes');
     cycleSidebar.textContent=0;
-    minutesSidebar.textContent=0;
   }
 });
 updateDisplay();
