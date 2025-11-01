@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>番茄钟</title>
+<title>番茄钟 · 手动专注自动休息</title>
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
@@ -95,7 +95,7 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
 <body>
 <div class="wrap">
   <header>
-    <h1>番茄钟</h1>
+    <h1>番茄钟 · 手动专注自动休息</h1>
     <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
   </header>
 
@@ -136,7 +136,6 @@ let running=false, timer=null, timeLeft=25*60;
 let cycleCount=0, totalMinutes=0, focusCount=0;
 const modes={focus:25, short:5, long:15};
 let currentMode='focus';
-let startTime=null, endTime=null;
 
 const startBtn=document.getElementById('startBtn');
 const pauseBtn=document.getElementById('pauseBtn');
@@ -167,15 +166,13 @@ modeButtons.forEach(btn=>{
     timeLeft=modes[currentMode]*60;
     updateDisplay();
     resetTimer();
-    focusCount=0; // 手动切换重置专注计数
+    focusCount=0; 
   });
 });
 
 function startTimer(){
   if(!running){
     running=true;
-    startTime=Date.now();
-    endTime=startTime + timeLeft*1000;
     startBtn.style.display='none';
     pauseBtn.style.display='inline-block';
     timer=requestAnimationFrame(update);
@@ -184,12 +181,11 @@ function startTimer(){
 
 function update(){
   if(!running) return;
-  const now = Date.now();
-  timeLeft = Math.max(0, Math.round((endTime - now)/1000));
-  updateDisplay();
+  timeLeft--;
   if(timeLeft<=0){
     finishTimer();
   } else {
+    updateDisplay();
     timer=requestAnimationFrame(update);
   }
 }
@@ -197,15 +193,12 @@ function update(){
 function pauseTimer(){
   if(running){
     running=false;
-    cancelAnimationFrame(timer);
-    timeLeft = Math.max(0, Math.round((endTime - Date.now())/1000));
     startBtn.style.display='inline-block';
     pauseBtn.style.display='none';
   }
 }
 
 function resetTimer(){
-  cancelAnimationFrame(timer);
   running=false;
   timeLeft=modes[currentMode]*60;
   updateDisplay();
@@ -214,38 +207,36 @@ function resetTimer(){
   [alarmFocus, alarmShort, alarmLong].forEach(a=>{a.pause();a.currentTime=0;});
 }
 
-function switchMode(mode){
-  currentMode = mode;
-  timeLeft = modes[mode]*60;
+function switchMode(mode, autoStart=false){
+  currentMode=mode;
+  timeLeft=modes[mode]*60;
   modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   updateDisplay();
-  startTimer();
+  if(autoStart) startTimer();
 }
 
 function finishTimer(){
-  if(currentMode==='focus'){ 
-    totalMinutes+=modes.focus; 
+  if(currentMode==='focus'){
+    totalMinutes += modes.focus;
     focusCount++;
+    alarmFocus.currentTime=0;
+    alarmFocus.play();
+    if(focusCount % 4 === 0){ switchMode('long', true); }
+    else { switchMode('short', true); }
+  } else {
+    if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play(); }
+    else { alarmLong.currentTime=0; alarmLong.play(); }
+    running=false;
+    startBtn.style.display='inline-block';
+    pauseBtn.style.display='none';
+    currentMode='focus';
+    timeLeft=modes.focus*60;
+    modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode==='focus'));
+    updateDisplay();
   }
   cycleCount++;
   cycleSidebar.textContent=cycleCount;
   minutesSidebar.textContent=totalMinutes;
-
-  if(currentMode==='focus'){ alarmFocus.currentTime=0; alarmFocus.play(); }
-  else if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play(); }
-  else if(currentMode==='long'){ alarmLong.currentTime=0; alarmLong.play(); }
-
-  running=false;
-  startBtn.style.display='inline-block';
-  pauseBtn.style.display='none';
-
-  // 自动模式逻辑
-  if(currentMode==='focus'){
-    if(focusCount % 4 === 0){ switchMode('long'); }
-    else { switchMode('short'); }
-  } else {
-    switchMode('focus');
-  }
 }
 
 startBtn.addEventListener('click', startTimer);
@@ -259,32 +250,27 @@ document.addEventListener('keydown', e=>{
 
 // 全屏
 const fullscreenBtn=document.getElementById('fullscreenBtn');
-function toggleFullscreen(){
-  if(!document.fullscreenElement){document.documentElement.requestFullscreen().then(()=>{fullscreenBtn.textContent='退出全屏';}).catch(console.error);}
-  else{document.exitFullscreen().then(()=>{fullscreenBtn.textContent='全屏';}).catch(console.error);}
-}
-fullscreenBtn.addEventListener('click', toggleFullscreen);
-document.addEventListener('keydown', e=>{ if(e.key==='f'||e.key==='F'){e.preventDefault(); toggleFullscreen(); }});
-document.addEventListener('fullscreenchange', ()=>{fullscreenBtn.textContent=document.fullscreenElement?'退出全屏':'全屏';});
+fullscreenBtn.addEventListener('click', ()=>{
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen();}
+  else{document.exitFullscreen();}
+});
+document.addEventListener('keydown', e=>{if(e.key==='f'||e.key==='F'){e.preventDefault(); fullscreenBtn.click();}});
 
 // 日夜模式
 const themeBtn=document.getElementById('themeToggleBtn');
-function toggleTheme(){
+themeBtn.addEventListener('click', ()=>{
   const current=document.documentElement.getAttribute('data-theme')||'dark';
   const next=current==='light'?'dark':'light';
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('theme',next);
-}
+});
 document.addEventListener('DOMContentLoaded', ()=>{
   const saved=localStorage.getItem('theme')||'dark';
   document.documentElement.setAttribute('data-theme',saved);
-  themeBtn.addEventListener('click', toggleTheme);
+  updateDisplay();
+  cycleSidebar.textContent=cycleCount;
+  minutesSidebar.textContent=totalMinutes;
 });
-
-// 初始化
-updateDisplay();
-cycleSidebar.textContent=cycleCount;
-minutesSidebar.textContent=totalMinutes;
 </script>
 </body>
 </html>
