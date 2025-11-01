@@ -13,4 +13,4 @@
 ## 快速部署（一步）
 1. 新建一个 GitHub 仓库（Public 或 Private）。
 2. 将本仓库的文件（`index.html`、`README.md`）推到该仓库的 `main` 分支。
-3. 打开下面的链接（把 `REPO_URL` 替换成你的仓库 HTTPS 地址，例如 `https://github.com/hzhang1011/pomodoro_vercel`）：
+3. 打开下面的链接（把 `REPO_URL` 替换成你的仓库 HTTPS 地址，例如 `https://github.com/xxxxxxx/pomodoro_vercel`）：
