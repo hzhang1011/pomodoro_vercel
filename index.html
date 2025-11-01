@@ -15,95 +15,132 @@
     --btn-text: #fff;
   }
   [data-theme="dark"] {
-    --bg: #121212;
-    --text: #eee;
+    --bg: #1b1b1b;
+    --text: #f0f0f0;
     --btn: #444;
   }
+
   body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
+    margin: 0;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
     transition: background 0.3s, color 0.3s;
   }
 
+  /* ===== 布局区域 ===== */
   .container {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    max-width: 500px;
     padding: 20px;
+  }
+
+  /* 桌面端布局优化 */
+  @media (min-width: 800px) {
+    .container {
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+  }
+
+  /* ===== 主内容区 ===== */
+  .main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0,0,0,0.03);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    min-width: 280px;
   }
 
   .mode-buttons {
     display: flex;
-    justify-content: center;
+    gap: 10px;
     flex-wrap: wrap;
-    gap: 8px;
+    justify-content: center;
   }
+
   .mode-buttons button {
     border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
+    border-radius: 10px;
+    padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
     color: var(--btn-text);
     background: var(--btn);
-    transition: transform 0.1s;
+    transition: background 0.2s, transform 0.1s;
   }
+
   .mode-buttons button.active {
     background: var(--focus);
   }
+
   .mode-buttons button:active {
     transform: scale(0.96);
   }
 
   .time {
-    font-size: 90px;
+    font-size: 110px;
+    font-weight: bold;
     margin: 30px 0;
     user-select: none;
   }
 
   .buttons {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
-  }
-  .buttons button {
-    padding: 12px 24px;
-    font-size: 18px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    color: var(--btn-text);
-    background: var(--btn);
-    min-width: 100px;
+    justify-content: center;
   }
 
+  .buttons button {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--btn-text);
+    background: var(--btn);
+    transition: transform 0.1s;
+  }
+  .buttons button:active { transform: scale(0.95); }
+
+  /* ===== 侧边栏（桌面右侧 / 手机底部） ===== */
   .sidebar {
-    width: 100%;
     text-align: center;
-    background: rgba(0,0,0,0.05);
-    padding: 15px;
-    border-top: 1px solid rgba(0,0,0,0.1);
+    background: rgba(0,0,0,0.04);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  @media (min-width: 800px) {
+    .sidebar {
+      width: 260px;
+      margin-top: 0;
+    }
   }
 
   #resetStats {
-    margin-top: 10px;
-    padding: 8px 16px;
+    margin-top: 15px;
+    padding: 8px 15px;
     border: none;
     border-radius: 8px;
     background: #888;
     color: #fff;
+    cursor: pointer;
   }
 
   #enableSoundOverlay {
@@ -118,38 +155,34 @@
     cursor: pointer;
     font-size: 22px;
   }
-
-  /* 手机端优化 */
-  @media (max-width: 600px) {
-    .time { font-size: 70px; }
-    .buttons button { font-size: 16px; padding: 10px 18px; min-width: 80px; }
-  }
 </style>
 </head>
 <body>
 <div id="enableSoundOverlay">🔊 点击激活声音</div>
 
 <div class="container">
-  <div class="mode-buttons">
-    <button data-mode="focus" class="active">专注</button>
-    <button data-mode="short">短休</button>
-    <button data-mode="long">长休</button>
+  <div class="main">
+    <div class="mode-buttons">
+      <button data-mode="focus" class="active">专注</button>
+      <button data-mode="short">短休</button>
+      <button data-mode="long">长休</button>
+    </div>
+
+    <div class="time" id="time">25:00</div>
+
+    <div class="buttons">
+      <button id="start">开始</button>
+      <button id="pause" style="display:none;">暂停</button>
+      <button id="reset">重置</button>
+      <button id="toggleTheme">主题</button>
+    </div>
   </div>
 
-  <div class="time" id="time">25:00</div>
-
-  <div class="buttons">
-    <button id="start">开始</button>
-    <button id="pause" style="display:none;">暂停</button>
-    <button id="reset">重置</button>
-    <button id="toggleTheme">主题</button>
+  <div class="sidebar">
+    <p>专注周期：<span id="cycles">0</span></p>
+    <p>累计专注：<span id="minutes">0</span> 分钟</p>
+    <button id="resetStats">清除统计</button>
   </div>
-</div>
-
-<div class="sidebar">
-  <p>专注周期：<span id="cycles">0</span></p>
-  <p>累计专注：<span id="minutes">0</span> 分钟</p>
-  <button id="resetStats">清除统计</button>
 </div>
 
 <audio id="alarmFocus" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"></audio>
@@ -157,54 +190,54 @@
 <audio id="alarmLong" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-game-notification-212.mp3"></audio>
 
 <script>
-const timeDisplay = document.getElementById('time');
-const startBtn = document.getElementById('start');
-const pauseBtn = document.getElementById('pause');
-const resetBtn = document.getElementById('reset');
-const toggleThemeBtn = document.getElementById('toggleTheme');
-const modeButtons = document.querySelectorAll('.mode-buttons button');
-const cycleSidebar = document.getElementById('cycles');
-const minutesSidebar = document.getElementById('minutes');
-const alarmFocus = document.getElementById('alarmFocus');
-const alarmShort = document.getElementById('alarmShort');
-const alarmLong = document.getElementById('alarmLong');
-const overlay = document.getElementById('enableSoundOverlay');
+const timeDisplay=document.getElementById('time');
+const startBtn=document.getElementById('start');
+const pauseBtn=document.getElementById('pause');
+const resetBtn=document.getElementById('reset');
+const toggleThemeBtn=document.getElementById('toggleTheme');
+const modeButtons=document.querySelectorAll('.mode-buttons button');
+const cycleSidebar=document.getElementById('cycles');
+const minutesSidebar=document.getElementById('minutes');
+const alarmFocus=document.getElementById('alarmFocus');
+const alarmShort=document.getElementById('alarmShort');
+const alarmLong=document.getElementById('alarmLong');
+const overlay=document.getElementById('enableSoundOverlay');
 
-let currentMode = 'focus';
-let timeLeft = 25 * 60;
-let timer = null;
-let running = false;
-let focusCount = 0;
-let modes = { focus: 25, short: 5, long: 15 };
+let currentMode='focus';
+let timeLeft=25*60;
+let timer=null;
+let running=false;
+let focusCount=0;
+let modes={focus:25,short:5,long:15};
 
-// 从 localStorage 读取统计数据
-let cycleCount = parseInt(localStorage.getItem('cycleCount')) || 0;
-let totalMinutes = parseInt(localStorage.getItem('totalMinutes')) || 0;
-cycleSidebar.textContent = cycleCount;
-minutesSidebar.textContent = totalMinutes;
+// 从 localStorage 读取统计
+let cycleCount=parseInt(localStorage.getItem('cycleCount'))||0;
+let totalMinutes=parseInt(localStorage.getItem('totalMinutes'))||0;
+cycleSidebar.textContent=cycleCount;
+minutesSidebar.textContent=totalMinutes;
 
 // 激活音频
-overlay.addEventListener('click', () => {
+overlay.addEventListener('click',()=>{
   alarmFocus.play().catch(()=>{});
   alarmFocus.pause();
   overlay.style.display='none';
 });
 
 function updateDisplay(){
-  const m = Math.floor(timeLeft / 60);
-  const s = timeLeft % 60;
-  timeDisplay.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const m=Math.floor(timeLeft/60);
+  const s=timeLeft%60;
+  timeDisplay.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
 function startTimer(){
   if(running) return;
-  running = true;
+  running=true;
   startBtn.style.display='none';
   pauseBtn.style.display='inline-block';
-  timer = setInterval(()=>{
+  timer=setInterval(()=>{
     timeLeft--;
     updateDisplay();
-    if(timeLeft <= 0){
+    if(timeLeft<=0){
       clearInterval(timer);
       finishTimer();
     }
@@ -223,56 +256,55 @@ function resetTimer(){
   running=false;
   startBtn.style.display='inline-block';
   pauseBtn.style.display='none';
-  timeLeft = modes[currentMode] * 60;
+  timeLeft=modes[currentMode]*60;
   updateDisplay();
-  [alarmFocus, alarmShort, alarmLong].forEach(a=>{a.pause();a.currentTime=0;});
+  [alarmFocus,alarmShort,alarmLong].forEach(a=>{a.pause();a.currentTime=0;});
 }
 
 function finishTimer(){
   if(currentMode==='focus'){
-    totalMinutes += modes.focus;
+    totalMinutes+=modes.focus;
     focusCount++;
     cycleCount++;
-    localStorage.setItem('cycleCount', cycleCount);
-    localStorage.setItem('totalMinutes', totalMinutes);
-    cycleSidebar.textContent = cycleCount;
-    minutesSidebar.textContent = totalMinutes;
-    alarmFocus.currentTime=0; alarmFocus.play();
-    if(focusCount % 4 === 0){ switchMode('long', true); }
-    else { switchMode('short', true); }
-  } else {
-    if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play(); }
-    else { alarmLong.currentTime=0; alarmLong.play(); }
+    localStorage.setItem('cycleCount',cycleCount);
+    localStorage.setItem('totalMinutes',totalMinutes);
+    cycleSidebar.textContent=cycleCount;
+    minutesSidebar.textContent=totalMinutes;
+    alarmFocus.currentTime=0;alarmFocus.play();
+    if(focusCount%4===0){switchMode('long',true);}else{switchMode('short',true);}
+  }else{
+    if(currentMode==='short'){alarmShort.currentTime=0;alarmShort.play();}
+    else{alarmLong.currentTime=0;alarmLong.play();}
     running=false;
     startBtn.style.display='inline-block';
     pauseBtn.style.display='none';
     currentMode='focus';
     timeLeft=modes.focus*60;
-    modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode==='focus'));
+    modeButtons.forEach(b=>b.classList.toggle('active',b.dataset.mode==='focus'));
     updateDisplay();
   }
 }
 
-function switchMode(mode, autoStart=false){
-  currentMode = mode;
-  timeLeft = modes[mode]*60;
-  modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+function switchMode(mode,autoStart=false){
+  currentMode=mode;
+  timeLeft=modes[mode]*60;
+  modeButtons.forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
   updateDisplay();
   if(autoStart) startTimer();
 }
 
-resetBtn.onclick = resetTimer;
-startBtn.onclick = startTimer;
-pauseBtn.onclick = pauseTimer;
-toggleThemeBtn.onclick = ()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'':'dark';};
+resetBtn.onclick=resetTimer;
+startBtn.onclick=startTimer;
+pauseBtn.onclick=pauseTimer;
+toggleThemeBtn.onclick=()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'':'dark';};
 modeButtons.forEach(btn=>btn.addEventListener('click',()=>switchMode(btn.dataset.mode,false)));
 
 document.getElementById('resetStats').addEventListener('click',()=>{
   if(confirm('确定要清除统计数据吗？')){
-    cycleCount=0; totalMinutes=0;
+    cycleCount=0;totalMinutes=0;
     localStorage.removeItem('cycleCount');
     localStorage.removeItem('totalMinutes');
-    cycleSidebar.textContent=0; minutesSidebar.textContent=0;
+    cycleSidebar.textContent=0;minutesSidebar.textContent=0;
   }
 });
 updateDisplay();
