@@ -5,77 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>番茄钟 Pomodoro</title>
 <style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--text);
-    transition: background 0.3s, color 0.3s;
-  }
   :root {
     --bg: #fefefe;
     --text: #333;
-    --focus: #ff5555;
-    --short: #00c3ff;
-    --long: #00cc66;
+    --focus: #ff4d4f;
+    --short: #00bcd4;
+    --long: #4caf50;
     --btn: #333;
     --btn-text: #fff;
   }
   [data-theme="dark"] {
-    --bg: #1c1c1c;
+    --bg: #121212;
     --text: #eee;
     --btn: #444;
   }
-  .container {
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
   }
-  .main {
+
+  .container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
   }
+
+  .mode-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .mode-buttons button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--btn-text);
+    background: var(--btn);
+    transition: transform 0.1s;
+  }
+  .mode-buttons button.active {
+    background: var(--focus);
+  }
+  .mode-buttons button:active {
+    transform: scale(0.96);
+  }
+
   .time {
-    font-size: 100px;
-    margin: 20px 0;
+    font-size: 90px;
+    margin: 30px 0;
+    user-select: none;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
   }
   .buttons button {
-    margin: 5px;
-    padding: 10px 25px;
+    padding: 12px 24px;
     font-size: 18px;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     color: var(--btn-text);
     background: var(--btn);
+    min-width: 100px;
   }
-  .mode-buttons button {
-    margin: 5px;
-    padding: 8px 18px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  .mode-buttons .active {
-    background: var(--focus);
-    color: #fff;
-  }
+
   .sidebar {
-    width: 220px;
+    width: 100%;
+    text-align: center;
     background: rgba(0,0,0,0.05);
     padding: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    border-top: 1px solid rgba(0,0,0,0.1);
   }
+
+  #resetStats {
+    margin-top: 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #888;
+    color: #fff;
+  }
+
   #enableSoundOverlay {
     position: fixed;
     inset: 0;
@@ -86,15 +116,13 @@
     justify-content: center;
     z-index: 9999;
     cursor: pointer;
+    font-size: 22px;
   }
-  #resetStats {
-    margin-top: 20px;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 8px;
-    background: #888;
-    color: #fff;
-    cursor: pointer;
+
+  /* 手机端优化 */
+  @media (max-width: 600px) {
+    .time { font-size: 70px; }
+    .buttons button { font-size: 16px; padding: 10px 18px; min-width: 80px; }
   }
 </style>
 </head>
@@ -102,27 +130,26 @@
 <div id="enableSoundOverlay">🔊 点击激活声音</div>
 
 <div class="container">
-  <div class="main">
-    <div class="mode-buttons">
-      <button data-mode="focus" class="active">专注</button>
-      <button data-mode="short">短休</button>
-      <button data-mode="long">长休</button>
-    </div>
-
-    <div class="time" id="time">25:00</div>
-    <div class="buttons">
-      <button id="start">开始</button>
-      <button id="pause" style="display:none;">暂停</button>
-      <button id="reset">重置</button>
-      <button id="toggleTheme">切换主题</button>
-    </div>
+  <div class="mode-buttons">
+    <button data-mode="focus" class="active">专注</button>
+    <button data-mode="short">短休</button>
+    <button data-mode="long">长休</button>
   </div>
 
-  <div class="sidebar">
-    <p>专注周期：<span id="cycles">0</span></p>
-    <p>累计专注：<span id="minutes">0</span> 分钟</p>
-    <button id="resetStats">清除统计</button>
+  <div class="time" id="time">25:00</div>
+
+  <div class="buttons">
+    <button id="start">开始</button>
+    <button id="pause" style="display:none;">暂停</button>
+    <button id="reset">重置</button>
+    <button id="toggleTheme">主题</button>
   </div>
+</div>
+
+<div class="sidebar">
+  <p>专注周期：<span id="cycles">0</span></p>
+  <p>累计专注：<span id="minutes">0</span> 分钟</p>
+  <button id="resetStats">清除统计</button>
 </div>
 
 <audio id="alarmFocus" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"></audio>
@@ -198,12 +225,7 @@ function resetTimer(){
   pauseBtn.style.display='none';
   timeLeft = modes[currentMode] * 60;
   updateDisplay();
-  alarmFocus.pause();
-  alarmShort.pause();
-  alarmLong.pause();
-  alarmFocus.currentTime=0;
-  alarmShort.currentTime=0;
-  alarmLong.currentTime=0;
+  [alarmFocus, alarmShort, alarmLong].forEach(a=>{a.pause();a.currentTime=0;});
 }
 
 function finishTimer(){
@@ -211,26 +233,16 @@ function finishTimer(){
     totalMinutes += modes.focus;
     focusCount++;
     cycleCount++;
-
-    // 保存统计
     localStorage.setItem('cycleCount', cycleCount);
     localStorage.setItem('totalMinutes', totalMinutes);
-
     cycleSidebar.textContent = cycleCount;
     minutesSidebar.textContent = totalMinutes;
-
-    alarmFocus.currentTime=0;
-    alarmFocus.play();
-
-    if(focusCount % 4 === 0){
-      switchMode('long', true);
-    } else {
-      switchMode('short', true);
-    }
+    alarmFocus.currentTime=0; alarmFocus.play();
+    if(focusCount % 4 === 0){ switchMode('long', true); }
+    else { switchMode('short', true); }
   } else {
     if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play(); }
     else { alarmLong.currentTime=0; alarmLong.play(); }
-
     running=false;
     startBtn.style.display='inline-block';
     pauseBtn.style.display='none';
@@ -243,7 +255,7 @@ function finishTimer(){
 
 function switchMode(mode, autoStart=false){
   currentMode = mode;
-  timeLeft = modes[mode] * 60;
+  timeLeft = modes[mode]*60;
   modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   updateDisplay();
   if(autoStart) startTimer();
@@ -252,25 +264,17 @@ function switchMode(mode, autoStart=false){
 resetBtn.onclick = resetTimer;
 startBtn.onclick = startTimer;
 pauseBtn.onclick = pauseTimer;
-toggleThemeBtn.onclick = () => {
-  document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark';
-};
-modeButtons.forEach(btn => {
-  btn.addEventListener('click', () => switchMode(btn.dataset.mode, false));
-});
+toggleThemeBtn.onclick = ()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'':'dark';};
+modeButtons.forEach(btn=>btn.addEventListener('click',()=>switchMode(btn.dataset.mode,false)));
 
-// 清除统计
-document.getElementById('resetStats').addEventListener('click', () => {
+document.getElementById('resetStats').addEventListener('click',()=>{
   if(confirm('确定要清除统计数据吗？')){
-    cycleCount = 0;
-    totalMinutes = 0;
+    cycleCount=0; totalMinutes=0;
     localStorage.removeItem('cycleCount');
     localStorage.removeItem('totalMinutes');
-    cycleSidebar.textContent = 0;
-    minutesSidebar.textContent = 0;
+    cycleSidebar.textContent=0; minutesSidebar.textContent=0;
   }
 });
-
 updateDisplay();
 </script>
 </body>
