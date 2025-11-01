@@ -150,10 +150,14 @@ const alarmFocus=document.getElementById('alarmFocus');
 const alarmShort=document.getElementById('alarmShort');
 const alarmLong=document.getElementById('alarmLong');
 
+function formatTime(sec){
+  let m=Math.floor(sec/60), s=sec%60;
+  return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
+
 function updateDisplay(){
-  let m=Math.floor(timeLeft/60), s=timeLeft%60;
-  timeDisplay.textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-  statusLabel.textContent=currentMode==='focus'?`专注 (${modes.focus} 分钟)`:
+  timeDisplay.textContent = formatTime(timeLeft);
+  statusLabel.textContent = currentMode==='focus'?`专注 (${modes.focus} 分钟)`:
                          currentMode==='short'?`短休息 (${modes.short} 分钟)`:
                          `长休息 (${modes.long} 分钟)`;
 }
@@ -175,18 +179,20 @@ function startTimer(){
     running=true;
     startBtn.style.display='none';
     pauseBtn.style.display='inline-block';
-    timer=requestAnimationFrame(update);
-  }
-}
-
-function update(){
-  if(!running) return;
-  timeLeft--;
-  if(timeLeft<=0){
-    finishTimer();
-  } else {
-    updateDisplay();
-    timer=requestAnimationFrame(update);
+    let prevTime=Date.now();
+    function tick(){
+      if(!running) return;
+      const now=Date.now();
+      const delta=Math.floor((now-prevTime)/1000);
+      if(delta>=1){
+        timeLeft=Math.max(0, timeLeft-delta);
+        prevTime=now;
+        updateDisplay();
+        if(timeLeft<=0){ finishTimer(); return; }
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 }
 
@@ -217,11 +223,10 @@ function switchMode(mode, autoStart=false){
 
 function finishTimer(){
   if(currentMode==='focus'){
-    totalMinutes += modes.focus;
+    totalMinutes+=modes.focus;
     focusCount++;
-    alarmFocus.currentTime=0;
-    alarmFocus.play();
-    if(focusCount % 4 === 0){ switchMode('long', true); }
+    alarmFocus.currentTime=0; alarmFocus.play();
+    if(focusCount%4===0){ switchMode('long', true); }
     else { switchMode('short', true); }
   } else {
     if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play(); }
@@ -264,6 +269,7 @@ themeBtn.addEventListener('click', ()=>{
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('theme',next);
 });
+
 document.addEventListener('DOMContentLoaded', ()=>{
   const saved=localStorage.getItem('theme')||'dark';
   document.documentElement.setAttribute('data-theme',saved);
