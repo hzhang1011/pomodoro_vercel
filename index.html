@@ -29,7 +29,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   padding: 20px 10px;
   transition: background 0.3s, color 0.3s;
 }
@@ -38,8 +37,7 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 380px; /* 🔹 收窄宽度适配移动端 */
-  flex: 1;
+  max-width: 380px;
 }
 .card {
   backdrop-filter: blur(15px) saturate(180%);
@@ -47,12 +45,12 @@ body {
   border-radius: 25px;
   padding: 20px;
   margin: 10px 0;
+  width: 100%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  width: 100%;
 }
 .section {
   display: flex;
@@ -114,11 +112,10 @@ body {
 }
 .heatmap {
   padding: 15px;
-  max-width: 380px;
-  width: 100%;
   border-radius: 25px;
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 100%;
 }
 .heatmap h3 {
   text-align: center;
@@ -169,6 +166,7 @@ body {
 </head>
 <body>
 <div id="enableSoundOverlay">🔊 Tap to enable sound</div>
+
 <div class="container">
   <div class="card main">
     <div class="section title">
@@ -191,11 +189,13 @@ body {
       <button id="toggleTheme">Theme</button>
     </div>
   </div>
+
   <div class="card heatmap">
     <h3>Weekly Focus Heatmap</h3>
     <div id="heatmapGrid"></div>
   </div>
 </div>
+
 <footer class="footer">W. I. T. H. STUDIO All rights reserved.</footer>
 
 <audio id="alarmFocus" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"></audio>
