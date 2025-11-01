@@ -110,31 +110,6 @@ body {
   font-weight: bold;
   text-align: center;
 }
-.heatmap {
-  padding: 15px;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  width: 100%;
-}
-.heatmap h3 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-#heatmapGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-}
-.day {
-  width: 100%;
-  padding-top: 100%;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.1);
-}
-.day.active {
-  background: var(--focus);
-}
 .footer {
   text-align: center;
   padding: 12px 0;
@@ -189,11 +164,6 @@ body {
       <button id="toggleTheme">Theme</button>
     </div>
   </div>
-
-  <div class="card heatmap">
-    <h3>Weekly Focus Heatmap</h3>
-    <div id="heatmapGrid"></div>
-  </div>
 </div>
 
 <footer class="footer">W. I. T. H. STUDIO All rights reserved.</footer>
@@ -221,19 +191,6 @@ let currentMode='focus',timeLeft=25*60,timer=null,running=false,focusCount=0;
 let modes={focus:25,short:5,long:15};
 let cycleCount=parseInt(localStorage.getItem('cycleCount'))||0;
 cycleSpan.textContent=cycleCount;
-let heatmapData=JSON.parse(localStorage.getItem('heatmapData'))||[0,0,0,0,0,0,0];
-const heatmapGrid=document.getElementById('heatmapGrid');
-
-function renderHeatmap(){
-  heatmapGrid.innerHTML='';
-  heatmapData.forEach(v=>{
-    const d=document.createElement('div');
-    d.className='day';
-    if(v>0)d.classList.add('active');
-    heatmapGrid.appendChild(d);
-  });
-}
-renderHeatmap();
 
 overlay.addEventListener('click',()=>{
   [alarmFocus,alarmShort,alarmLong].forEach(a=>{a.play().catch(()=>{});a.pause();a.currentTime=0;});
@@ -280,10 +237,9 @@ toggleThemeBtn.addEventListener('click',()=>{
   else document.documentElement.setAttribute('data-theme','dark');
 });
 resetStatsBtn.addEventListener('click',()=>{
-  cycleCount=0;focusCount=0;heatmapData=[0,0,0,0,0,0,0];
+  cycleCount=0;
   localStorage.setItem('cycleCount',0);
-  localStorage.setItem('heatmapData',JSON.stringify(heatmapData));
-  cycleSpan.textContent=cycleCount;renderHeatmap();
+  cycleSpan.textContent=cycleCount;
 });
 function finishTimer(){
   running=false;startBtn.style.display='inline-block';pauseBtn.style.display='none';
@@ -295,10 +251,6 @@ function finishTimer(){
     modeButtons.forEach(x=>x.classList.remove('active'));
     document.querySelector(`[data-mode="${currentMode}"]`).classList.add('active');
     updateDisplay();
-    const day=(new Date()).getDay();
-    heatmapData[day]=(heatmapData[day]||0)+1;
-    localStorage.setItem('heatmapData',JSON.stringify(heatmapData));
-    renderHeatmap();
   }else{
     playSound(currentMode==='short'?alarmShort:alarmLong);
     notify(`${currentMode==='short'?'Short':'Long'} break over`);
