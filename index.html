@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Pomodoro Timer</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
 <style>
 :root {
   --bg: #fefefe;
-  --text: #333;
-  --focus: #ff4d4f;
+  --text: #222;
+  --focus: #ff5252;
   --short: #00bcd4;
   --long: #4caf50;
-  --btn-bg: rgba(50,50,50,0.6);
+  --btn-bg: rgba(50, 50, 50, 0.5);
   --btn-text: #fff;
 }
 [data-theme="dark"] {
-  --bg: #1b1b1b;
+  --bg: #1a1a1a;
   --text: #f0f0f0;
-  --btn-bg: rgba(255,255,255,0.2);
+  --btn-bg: rgba(255, 255, 255, 0.15);
 }
-
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: var(--bg);
   color: var(--text);
   margin: 0;
@@ -34,152 +33,148 @@ body {
   padding: 20px 10px;
   transition: background 0.3s, color 0.3s;
 }
-
-/* ===== Container ===== */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
   width: 100%;
   max-width: 450px;
   flex: 1;
 }
-
-/* ===== Frosted Glass Card ===== */
 .card {
-  backdrop-filter: blur(12px) saturate(180%);
-  background: rgba(255,255,255,0.2);
-  border-radius: 20px;
+  backdrop-filter: blur(15px) saturate(180%);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 25px;
   padding: 20px;
   margin: 10px 0;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  min-height: 480px;
+  justify-content: space-evenly;
   width: 100%;
 }
-
-/* ===== Sections ===== */
-.section { display:flex; align-items:center; justify-content:center; width:100%; margin:8px 0; }
-
-/* ===== Title Section ===== */
-.title {
-  flex-direction: column;
-  flex: 1;
+.section {
   display: flex;
+  align-items: center;
   justify-content: center;
   width: 100%;
+  margin: 8px 0;
+}
+.title {
+  flex-direction: column;
+  text-align: center;
 }
 .title h1 {
-  font-family: 'Poppins', sans-serif;
   font-size: 36px;
   font-weight: 700;
-  text-align: center;
-  color: var(--text);
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
   margin: 0;
 }
 .title .cycles {
   font-size: 16px;
   margin-top: 6px;
-  color: var(--text);
-  display:flex; align-items:center; gap:10px;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-
-/* ===== Mode Buttons ===== */
-.mode-buttons { gap:10px; margin-bottom:10px;}
-.mode-buttons button {
-  padding:12px 0;
-  min-width:100px;
-  font-size:16px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  color:var(--btn-text);
-  background:var(--btn-bg);
-  transition:transform 0.1s, background 0.2s;
-  text-align:center;
-  flex:1;
-  max-width:140px;
-}
-.mode-buttons button.active { background: var(--focus); }
-.mode-buttons button:active { transform: scale(0.95); }
-
-/* ===== Timer ===== */
-.time { font-size:72px; font-weight:bold; flex: 2; display:flex; align-items:center; justify-content:center; }
-
-/* ===== Control Buttons ===== */
+.mode-buttons,
 .buttons {
-  display:flex; gap:10px; flex-wrap:wrap; flex:1; justify-content:center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
 }
+.mode-buttons button,
 .buttons button {
-  padding:12px 0;
-  min-width:100px;
-  font-size:16px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  color:var(--btn-text);
-  background:var(--btn-bg);
-  transition:transform 0.1s;
-  text-align:center;
-  flex:1;
-  max-width:140px;
+  flex: 1;
+  min-width: 100px;
+  max-width: 130px;
+  padding: 12px 0;
+  border-radius: 15px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  transition: transform 0.1s, background 0.2s;
+  text-align: center;
 }
-.buttons button:active { transform: scale(0.95); }
-
-/* ===== Footer ===== */
+.mode-buttons button.active {
+  background: var(--focus);
+}
+.mode-buttons button:active,
+.buttons button:active {
+  transform: scale(0.95);
+}
+.time {
+  font-size: 72px;
+  font-weight: bold;
+  text-align: center;
+}
+.heatmap {
+  padding: 15px;
+  max-width: 450px;
+  width: 100%;
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+.heatmap h3 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+#heatmapGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.day {
+  width: 100%;
+  padding-top: 100%;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.1);
+}
+.day.active {
+  background: var(--focus);
+}
 .footer {
-  width:100%;
-  text-align:center;
-  padding:12px 0;
-  font-size:14px;
-  color:var(--text);
-  opacity:0.7;
-  margin-top:15px;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 14px;
+  opacity: 0.7;
 }
-
-/* ===== Overlay for sound activation ===== */
-#enableSoundOverlay{
-  position: fixed; inset:0;
+#enableSoundOverlay {
+  position: fixed;
+  inset: 0;
   background: #000c;
   color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 22px;
+  z-index: 9999;
   cursor: pointer;
 }
 </style>
 </head>
 <body>
-<div id="enableSoundOverlay">🔊 Click to enable sound</div>
-
+<div id="enableSoundOverlay">🔊 Tap to enable sound</div>
 <div class="container">
   <div class="card main">
-    <!-- Title + Cycles + Reset -->
     <div class="section title">
       <h1>Pomodoro</h1>
       <div class="cycles">
-        <button id="resetStats" style="padding:4px 8px; font-size:14px;">Reset</button>
+        <button id="resetStats" style="padding:4px 8px;font-size:14px;">Reset</button>
         <span>Cycles: <span id="cycles">0</span></span>
       </div>
     </div>
-
-    <!-- Mode Buttons -->
     <div class="section mode-buttons">
       <button data-mode="focus" class="active">Focus</button>
-      <button data-mode="short">Short Break</button>
-      <button data-mode="long">Long Break</button>
+      <button data-mode="short">Short</button>
+      <button data-mode="long">Long</button>
     </div>
-
-    <!-- Timer -->
     <div class="section time" id="time">25:00</div>
-
-    <!-- Control Buttons -->
     <div class="section buttons">
       <button id="start">Start</button>
       <button id="pause" style="display:none;">Pause</button>
@@ -187,124 +182,125 @@ body {
       <button id="toggleTheme">Theme</button>
     </div>
   </div>
+  <div class="card heatmap">
+    <h3>Weekly Focus Heatmap</h3>
+    <div id="heatmapGrid"></div>
+  </div>
 </div>
-
-<footer class="footer">
-  W. I. T. H. STUDIO All rights reserved.
-</footer>
+<footer class="footer">W. I. T. H. STUDIO All rights reserved.</footer>
 
 <audio id="alarmFocus" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"></audio>
 <audio id="alarmShort" src="https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3"></audio>
 <audio id="alarmLong" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-game-notification-212.mp3"></audio>
 
 <script>
-const timeDisplay = document.getElementById('time');
-const startBtn = document.getElementById('start');
-const pauseBtn = document.getElementById('pause');
-const resetBtn = document.getElementById('reset');
-const toggleThemeBtn = document.getElementById('toggleTheme');
-const modeButtons = document.querySelectorAll('.mode-buttons button');
-const cycleSidebar = document.getElementById('cycles');
-const alarmFocus = document.getElementById('alarmFocus');
-const alarmShort = document.getElementById('alarmShort');
-const alarmLong = document.getElementById('alarmLong');
-const overlay = document.getElementById('enableSoundOverlay');
-const resetStatsBtn = document.getElementById('resetStats');
+const timeDisplay=document.getElementById('time');
+const startBtn=document.getElementById('start');
+const pauseBtn=document.getElementById('pause');
+const resetBtn=document.getElementById('reset');
+const toggleThemeBtn=document.getElementById('toggleTheme');
+const modeButtons=document.querySelectorAll('.mode-buttons button');
+const cycleSpan=document.getElementById('cycles');
+const resetStatsBtn=document.getElementById('resetStats');
+const overlay=document.getElementById('enableSoundOverlay');
 
-let currentMode='focus';
-let timeLeft=25*60;
-let timer=null;
-let running=false;
-let focusCount=0;
+const alarmFocus=document.getElementById('alarmFocus');
+const alarmShort=document.getElementById('alarmShort');
+const alarmLong=document.getElementById('alarmLong');
+
+let currentMode='focus',timeLeft=25*60,timer=null,running=false,focusCount=0;
 let modes={focus:25,short:5,long:15};
 let cycleCount=parseInt(localStorage.getItem('cycleCount'))||0;
-cycleSidebar.textContent=cycleCount;
+cycleSpan.textContent=cycleCount;
+let heatmapData=JSON.parse(localStorage.getItem('heatmapData'))||[0,0,0,0,0,0,0];
+const heatmapGrid=document.getElementById('heatmapGrid');
 
-if('Notification' in window){ Notification.requestPermission(); }
+function renderHeatmap(){
+  heatmapGrid.innerHTML='';
+  heatmapData.forEach(v=>{
+    const d=document.createElement('div');
+    d.className='day';
+    if(v>0)d.classList.add('active');
+    heatmapGrid.appendChild(d);
+  });
+}
+renderHeatmap();
 
 overlay.addEventListener('click',()=>{
-  [alarmFocus,alarmShort,alarmLong].forEach(a=>{a.play().catch(()=>{}); a.pause(); a.currentTime=0;});
+  [alarmFocus,alarmShort,alarmLong].forEach(a=>{a.play().catch(()=>{});a.pause();a.currentTime=0;});
   overlay.style.display='none';
 });
-
-function notifyUser(title,text){
-  if(Notification.permission==='granted') new Notification(title,{body:text});
-}
+if('Notification'in window)Notification.requestPermission();
 
 function updateDisplay(){
-  const m=Math.floor(timeLeft/60);
-  const s=timeLeft%60;
+  const m=Math.floor(timeLeft/60),s=timeLeft%60;
   timeDisplay.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
-
+function playSound(sound){sound.pause();sound.currentTime=0;sound.play().catch(()=>{});}
+function notify(txt){if(Notification.permission==='granted'){new Notification(txt);}else alert(txt);}
 function startTimer(){
   if(running)return;
-  running=true;
-  startBtn.style.display='none'; pauseBtn.style.display='inline-block';
+  running=true;startBtn.style.display='none';pauseBtn.style.display='inline-block';
   timer=setInterval(()=>{
-    timeLeft--; updateDisplay();
-    if(timeLeft<=0){ clearInterval(timer); finishTimer(); }
+    timeLeft--;updateDisplay();
+    if(timeLeft<=0){clearInterval(timer);finishTimer();}
   },1000);
 }
-
-function pauseTimer(){
-  running=false; clearInterval(timer);
-  startBtn.style.display='inline-block';
-  pauseBtn.style.display='none';
-}
-
+function pauseTimer(){running=false;clearInterval(timer);startBtn.style.display='inline-block';pauseBtn.style.display='none';}
 function resetTimer(){
-  clearInterval(timer); running=false;
-  startBtn.style.display='inline-block';
-  pauseBtn.style.display='none';
-  timeLeft=modes[currentMode]*60;
-  updateDisplay();
+  clearInterval(timer);running=false;
+  startBtn.style.display='inline-block';pauseBtn.style.display='none';
+  timeLeft=modes[currentMode]*60;updateDisplay();
   [alarmFocus,alarmShort,alarmLong].forEach(a=>{a.pause();a.currentTime=0;});
 }
-
-function finishTimer(){
-  if(currentMode==='focus'){
-    focusCount++; cycleCount++;
-    localStorage.setItem('cycleCount',cycleCount);
-    cycleSidebar.textContent=cycleCount;
-    alarmFocus.currentTime=0; alarmFocus.play().catch(()=>{});
-    notifyUser('Pomodoro','Focus finished! Take a break.');
-    if(focusCount%4===0){ switchMode('long',true); }
-    else { switchMode('short',true); }
-  }else{
-    if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play().catch(()=>{});}
-    else { alarmLong.currentTime=0; alarmLong.play().catch(()=>{});}
-    running=false;
-    startBtn.style.display='inline-block';
-    pauseBtn.style.display='none';
-    currentMode='focus';
-    timeLeft=modes.focus*60;
-    modeButtons.forEach(b=>b.classList.toggle('active',b.dataset.mode==='focus'));
-    notifyUser('Pomodoro','Break finished. Start focus manually.');
-    updateDisplay();
-  }
-}
-
-function switchMode(mode,autoStart=false){
-  currentMode=mode;
-  timeLeft=modes[mode]*60;
-  modeButtons.forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
-  updateDisplay();
-  if(autoStart) startTimer();
-}
-
-resetBtn.onclick=resetTimer;
-startBtn.onclick=startTimer;
-pauseBtn.onclick=pauseTimer;
-toggleThemeBtn.onclick=()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'':'dark';};
-modeButtons.forEach(btn=>btn.addEventListener('click',()=>switchMode(btn.dataset.mode,false)));
-resetStatsBtn.addEventListener('click',()=>{
-  if(confirm('Reset all cycles?')){
-    cycleCount=0;
-    localStorage.removeItem('cycleCount');
-    cycleSidebar.textContent=0;
-  }
+modeButtons.forEach(b=>{
+  b.addEventListener('click',()=>{
+    currentMode=b.dataset.mode;
+    timeLeft=modes[currentMode]*60;
+    modeButtons.forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    updateDisplay();resetTimer();
+  });
 });
+startBtn.addEventListener('click',startTimer);
+pauseBtn.addEventListener('click',pauseTimer);
+resetBtn.addEventListener('click',resetTimer);
+toggleThemeBtn.addEventListener('click',()=>{
+  if(document.documentElement.getAttribute('data-theme')==='dark')
+    document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme','dark');
+});
+resetStatsBtn.addEventListener('click',()=>{
+  cycleCount=0;focusCount=0;heatmapData=[0,0,0,0,0,0,0];
+  localStorage.setItem('cycleCount',0);
+  localStorage.setItem('heatmapData',JSON.stringify(heatmapData));
+  cycleSpan.textContent=cycleCount;renderHeatmap();
+});
+function finishTimer(){
+  running=false;startBtn.style.display='inline-block';pauseBtn.style.display='none';
+  if(currentMode==='focus'){
+    playSound(alarmFocus);notify('Focus session complete!');
+    focusCount++;if(focusCount>=4){focusCount=0;currentMode='long';}
+    else{currentMode='short';}
+    timeLeft=modes[currentMode]*60;
+    modeButtons.forEach(x=>x.classList.remove('active'));
+    document.querySelector(`[data-mode="${currentMode}"]`).classList.add('active');
+    updateDisplay();
+    // heatmap update
+    const day=(new Date()).getDay();
+    heatmapData[day]=(heatmapData[day]||0)+1;
+    localStorage.setItem('heatmapData',JSON.stringify(heatmapData));
+    renderHeatmap();
+  }else{
+    playSound(currentMode==='short'?alarmShort:alarmLong);
+    notify(`${currentMode==='short'?'Short':'Long'} break over`);
+    if(currentMode==='short'||currentMode==='long'){
+      cycleCount++;
+      localStorage.setItem('cycleCount',cycleCount);
+      cycleSpan.textContent=cycleCount;
+    }
+  }
+}
 updateDisplay();
 </script>
 </body>
