@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pomodoro 番茄钟</title>
+<title>番茄钟</title>
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
@@ -95,7 +95,7 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
 <body>
 <div class="wrap">
   <header>
-    <h1>Pomodoro 番茄钟</h1>
+    <h1>番茄钟</h1>
     <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
   </header>
 
@@ -120,7 +120,6 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
     <h2>今日统计</h2>
     <div class="sidebar-item">专注周期: <span id="cycleSidebar">0</span></div>
     <div class="sidebar-item">专注总分钟: <span id="minutesSidebar">0</span> 分钟</div>
-
     <h2>小提示</h2>
     <div class="sidebar-item">喝水提醒 💧</div>
     <div class="sidebar-item">深呼吸 1 分钟 🌬️</div>
@@ -223,8 +222,13 @@ function switchMode(mode, autoStart=false){
 
 function finishTimer(){
   if(currentMode==='focus'){
-    totalMinutes+=modes.focus;
+    // 累加专注统计
+    totalMinutes += modes.focus;
     focusCount++;
+    cycleCount++;
+    cycleSidebar.textContent = cycleCount;
+    minutesSidebar.textContent = totalMinutes;
+
     alarmFocus.currentTime=0; alarmFocus.play();
     if(focusCount%4===0){ switchMode('long', true); }
     else { switchMode('short', true); }
@@ -239,9 +243,6 @@ function finishTimer(){
     modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode==='focus'));
     updateDisplay();
   }
-  cycleCount++;
-  cycleSidebar.textContent=cycleCount;
-  minutesSidebar.textContent=totalMinutes;
 }
 
 startBtn.addEventListener('click', startTimer);
