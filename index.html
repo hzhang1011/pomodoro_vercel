@@ -1,185 +1,277 @@
-<!doctype html>
-<html lang="zh-CN">
+<!DOCTYPE html>
+<html lang="zh">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>番茄钟</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>番茄钟 Pomodoro</title>
 <style>
-:root {
-  --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
-  --card: rgba(255,255,255,0.1);
-  --accent-gradient: linear-gradient(90deg,#ff6b6b,#ff8c42);
-  --text-main: #fff;
-  --text-muted: #fff3b0;
-  --mode-active: #ffd166;
-}
-[data-theme="dark"] {
-  --bg-gradient: linear-gradient(135deg, #0f1724, #1e293b);
-  --card: rgba(255,255,255,0.05);
-  --accent-gradient: linear-gradient(90deg,#ff6b6b,#ff8c42);
-  --text-main: #e6eef6;
-  --text-muted: #94a3b8;
-  --mode-active: #ffd166;
-}
-[data-theme="light"] {
-  --bg-gradient: linear-gradient(135deg, #a1c4fd, #c2e9fb);
-  --card: rgba(255,255,255,0.8);
-  --accent-gradient: linear-gradient(90deg,#ff8c42,#ff6b6b);
-  --text-main: #1e293b;
-  --text-muted: #475569;
-  --mode-active: #ff8c42;
-}
-*{box-sizing:border-box;}
-body{
-  margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Helvetica Neue",Arial;
-  background: var(--bg-gradient);color: var(--text-main);
-  display:flex;align-items:center;justify-content:center;height:100vh;
-}
-.wrap{
-  width:min(900px,95%);padding:28px;background: var(--card);
-  border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,0.3);
-  display:grid;grid-template-columns:1fr 250px;gap:18px;
-}
-@media (max-width:820px){.wrap{grid-template-columns:1fr;padding:18px}}
-header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px}
-h1{margin:0;font-size:18px;letter-spacing:0.2px}
-.clock{background:var(--card);border-radius:12px;padding:26px;display:flex;flex-direction:column;align-items:center;gap:12px;min-height:220px}
-.time{font-size:64px;font-weight:700;letter-spacing:1px}
-.mode{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-button.mode-btn{background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text-muted);padding:8px 12px;border-radius:10px;cursor:pointer}
-button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-active); box-shadow:0 6px 18px rgba(255,140,66,0.3)}
-.controls{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
-.btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;background: var(--accent-gradient);color: #fff;transition: transform 0.1s;}
-.btn:hover{ transform: translateY(-2px);}
-.small{font-size:13px;color:var(--text-muted)}
-.sidebar{background:var(--card);padding:16px;border-radius:12px;display:flex;flex-direction:column;gap:12px}
-.sidebar h2{margin:0 0 8px 0;font-size:16px;color:var(--text-main)}
-.sidebar-item{font-size:14px;color:var(--text-muted)}
-#enableSoundOverlay{position:fixed;inset:0;background:#000c;color:#fff;display:flex;align-items:center;justify-content:center;z-index:9999;cursor:pointer;font-size:24px;}
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+  }
+  :root {
+    --bg: #fefefe;
+    --text: #333;
+    --focus: #ff5555;
+    --short: #00c3ff;
+    --long: #00cc66;
+    --btn: #333;
+    --btn-text: #fff;
+  }
+  [data-theme="dark"] {
+    --bg: #1c1c1c;
+    --text: #eee;
+    --btn: #444;
+  }
+  .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 100vh;
+  }
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .time {
+    font-size: 100px;
+    margin: 20px 0;
+  }
+  .buttons button {
+    margin: 5px;
+    padding: 10px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--btn-text);
+    background: var(--btn);
+  }
+  .mode-buttons button {
+    margin: 5px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .mode-buttons .active {
+    background: var(--focus);
+    color: #fff;
+  }
+  .sidebar {
+    width: 220px;
+    background: rgba(0,0,0,0.05);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  #enableSoundOverlay {
+    position: fixed;
+    inset: 0;
+    background: #000c;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    cursor: pointer;
+  }
+  #resetStats {
+    margin-top: 20px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    background: #888;
+    color: #fff;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>番茄钟</h1>
-    <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
-  </header>
+<div id="enableSoundOverlay">🔊 点击激活声音</div>
 
-  <main class="clock">
-    <div id="timeDisplay" class="time">25:00</div>
-    <div id="statusLabel" class="small">专注 (25 分钟)</div>
-    <div class="mode">
-      <button class="mode-btn active" data-mode="focus">专注</button>
-      <button class="mode-btn" data-mode="short">短休息</button>
-      <button class="mode-btn" data-mode="long">长休息</button>
+<div class="container">
+  <div class="main">
+    <div class="mode-buttons">
+      <button data-mode="focus" class="active">专注</button>
+      <button data-mode="short">短休</button>
+      <button data-mode="long">长休</button>
     </div>
-    <div class="controls">
-      <button class="btn start" id="startBtn">开始</button>
-      <button class="btn pause" id="pauseBtn" style="display:none">暂停</button>
-      <button class="btn" id="resetBtn">重置</button>
-      <button class="btn" id="fullscreenBtn">全屏</button>
-      <button class="btn" id="themeToggleBtn">切换日夜</button>
-    </div>
-  </main>
 
-  <aside class="sidebar">
-    <h2>今日统计</h2>
-    <div class="sidebar-item">专注周期: <span id="cycleSidebar">0</span></div>
-    <div class="sidebar-item">专注总分钟: <span id="minutesSidebar">0</span> 分钟</div>
-    <h2>小提示</h2>
-    <div class="sidebar-item">喝水提醒 💧</div>
-    <div class="sidebar-item">深呼吸 1 分钟 🌬️</div>
-  </aside>
+    <div class="time" id="time">25:00</div>
+    <div class="buttons">
+      <button id="start">开始</button>
+      <button id="pause" style="display:none;">暂停</button>
+      <button id="reset">重置</button>
+      <button id="toggleTheme">切换主题</button>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <p>专注周期：<span id="cycles">0</span></p>
+    <p>累计专注：<span id="minutes">0</span> 分钟</p>
+    <button id="resetStats">清除统计</button>
+  </div>
 </div>
 
-<audio id="alarmFocus" src="focus.mp3" preload="auto"></audio>
-<audio id="alarmShort" src="short.mp3" preload="auto"></audio>
-<audio id="alarmLong" src="long.mp3" preload="auto"></audio>
-
-<div id="enableSoundOverlay">点击激活音频并开始专注 🔊</div>
+<audio id="alarmFocus" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"></audio>
+<audio id="alarmShort" src="https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3"></audio>
+<audio id="alarmLong" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-game-notification-212.mp3"></audio>
 
 <script>
-let running=false, timeLeft=25*60, cycleCount=0, totalMinutes=0, focusCount=0;
-const modes={focus:25, short:5, long:15};
-let currentMode='focus';
+const timeDisplay = document.getElementById('time');
+const startBtn = document.getElementById('start');
+const pauseBtn = document.getElementById('pause');
+const resetBtn = document.getElementById('reset');
+const toggleThemeBtn = document.getElementById('toggleTheme');
+const modeButtons = document.querySelectorAll('.mode-buttons button');
+const cycleSidebar = document.getElementById('cycles');
+const minutesSidebar = document.getElementById('minutes');
+const alarmFocus = document.getElementById('alarmFocus');
+const alarmShort = document.getElementById('alarmShort');
+const alarmLong = document.getElementById('alarmLong');
+const overlay = document.getElementById('enableSoundOverlay');
 
-const startBtn=document.getElementById('startBtn');
-const pauseBtn=document.getElementById('pauseBtn');
-const resetBtn=document.getElementById('resetBtn');
-const timeDisplay=document.getElementById('timeDisplay');
-const statusLabel=document.getElementById('statusLabel');
-const cycleSidebar=document.getElementById('cycleSidebar');
-const minutesSidebar=document.getElementById('minutesSidebar');
-const modeButtons=document.querySelectorAll('.mode-btn');
+let currentMode = 'focus';
+let timeLeft = 25 * 60;
+let timer = null;
+let running = false;
+let focusCount = 0;
+let modes = { focus: 25, short: 5, long: 15 };
 
-const alarmFocus=document.getElementById('alarmFocus');
-const alarmShort=document.getElementById('alarmShort');
-const alarmLong=document.getElementById('alarmLong');
-const overlay=document.getElementById('enableSoundOverlay');
+// 从 localStorage 读取统计数据
+let cycleCount = parseInt(localStorage.getItem('cycleCount')) || 0;
+let totalMinutes = parseInt(localStorage.getItem('totalMinutes')) || 0;
+cycleSidebar.textContent = cycleCount;
+minutesSidebar.textContent = totalMinutes;
 
-// 格式化时间
-function formatTime(sec){let m=Math.floor(sec/60), s=sec%60; return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;}
-function updateDisplay(){timeDisplay.textContent=formatTime(timeLeft);statusLabel.textContent=currentMode==='focus'?`专注 (${modes.focus} 分钟)`:currentMode==='short'?`短休息 (${modes.short} 分钟)`:`长休息 (${modes.long} 分钟)`;}
+// 激活音频
+overlay.addEventListener('click', () => {
+  alarmFocus.play().catch(()=>{});
+  alarmFocus.pause();
+  overlay.style.display='none';
+});
 
-// 桌面通知
-function notify(title, body){if(Notification.permission==='granted'){new Notification(title,{body});}}
-
-// 渐进音量播放
-function playAudioGradual(audio){
-  const ctx=new (window.AudioContext||window.webkitAudioContext)();
-  const track=ctx.createMediaElementSource(audio);
-  const gainNode=ctx.createGain();
-  gainNode.gain.value=0;
-  track.connect(gainNode).connect(ctx.destination);
-  audio.play();
-  let vol=0; const step=0.05;
-  const interval=setInterval(()=>{vol+=step;if(vol>=1){vol=1;clearInterval(interval);} gainNode.gain.setValueAtTime(vol,ctx.currentTime);},200);
+function updateDisplay(){
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  timeDisplay.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
-// 启动计时器
 function startTimer(){
-  if(!running){running=true; startBtn.style.display='none'; pauseBtn.style.display='inline-block'; let prevTime=Date.now(); function tick(){if(!running) return; const now=Date.now(); const delta=Math.floor((now-prevTime)/1000); if(delta>=1){timeLeft=Math.max(0,timeLeft-delta); prevTime=now; updateDisplay(); if(timeLeft<=0){finishTimer();return;}} requestAnimationFrame(tick);} requestAnimationFrame(tick);}
+  if(running) return;
+  running = true;
+  startBtn.style.display='none';
+  pauseBtn.style.display='inline-block';
+  timer = setInterval(()=>{
+    timeLeft--;
+    updateDisplay();
+    if(timeLeft <= 0){
+      clearInterval(timer);
+      finishTimer();
+    }
+  },1000);
 }
-function pauseTimer(){if(running){running=false; startBtn.style.display='inline-block'; pauseBtn.style.display='none';}}
-function resetTimer(){running=false; timeLeft=modes[currentMode]*60; updateDisplay(); startBtn.style.display='inline-block'; pauseBtn.style.display='none'; [alarmFocus,alarmShort,alarmLong].forEach(a=>{a.pause();a.currentTime=0;});}
-function switchMode(mode, autoStart=false){currentMode=mode; timeLeft=modes[mode]*60; modeButtons.forEach(b=>b.classList.toggle('active',b.dataset.mode===mode)); updateDisplay(); if(autoStart) startTimer();}
 
-// 完成计时逻辑
+function pauseTimer(){
+  running=false;
+  clearInterval(timer);
+  startBtn.style.display='inline-block';
+  pauseBtn.style.display='none';
+}
+
+function resetTimer(){
+  clearInterval(timer);
+  running=false;
+  startBtn.style.display='inline-block';
+  pauseBtn.style.display='none';
+  timeLeft = modes[currentMode] * 60;
+  updateDisplay();
+  alarmFocus.pause();
+  alarmShort.pause();
+  alarmLong.pause();
+  alarmFocus.currentTime=0;
+  alarmShort.currentTime=0;
+  alarmLong.currentTime=0;
+}
+
 function finishTimer(){
   if(currentMode==='focus'){
-    totalMinutes+=modes.focus; focusCount++; cycleCount++;
-    cycleSidebar.textContent=cycleCount; minutesSidebar.textContent=totalMinutes;
-    if(document.visibilityState==='hidden'){ notify('专注结束','进入休息模式'); }
-    playAudioGradual(alarmFocus);
-    if(focusCount%4===0){ switchMode('long', true); } else { switchMode('short', true); }
+    totalMinutes += modes.focus;
+    focusCount++;
+    cycleCount++;
+
+    // 保存统计
+    localStorage.setItem('cycleCount', cycleCount);
+    localStorage.setItem('totalMinutes', totalMinutes);
+
+    cycleSidebar.textContent = cycleCount;
+    minutesSidebar.textContent = totalMinutes;
+
+    alarmFocus.currentTime=0;
+    alarmFocus.play();
+
+    if(focusCount % 4 === 0){
+      switchMode('long', true);
+    } else {
+      switchMode('short', true);
+    }
   } else {
-    if(currentMode==='short'){ if(document.visibilityState==='hidden'){ notify('短休息结束','准备开始专注');} playAudioGradual(alarmShort);}
-    else { if(document.visibilityState==='hidden'){ notify('长休息结束','准备开始专注');} playAudioGradual(alarmLong);}
-    running=false; startBtn.style.display='inline-block'; pauseBtn.style.display='none';
-    currentMode='focus'; timeLeft=modes.focus*60; modeButtons.forEach(b=>b.classList.toggle('active',b.dataset.mode==='focus')); updateDisplay();
+    if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play(); }
+    else { alarmLong.currentTime=0; alarmLong.play(); }
+
+    running=false;
+    startBtn.style.display='inline-block';
+    pauseBtn.style.display='none';
+    currentMode='focus';
+    timeLeft=modes.focus*60;
+    modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode==='focus'));
+    updateDisplay();
   }
 }
 
-// 模式切换按钮
-modeButtons.forEach(btn=>{btn.addEventListener('click',()=>{modeButtons.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentMode=btn.dataset.mode; timeLeft=modes[currentMode]*60; updateDisplay(); resetTimer(); focusCount=0;});});
+function switchMode(mode, autoStart=false){
+  currentMode = mode;
+  timeLeft = modes[mode] * 60;
+  modeButtons.forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  updateDisplay();
+  if(autoStart) startTimer();
+}
 
-// 控件
-startBtn.addEventListener('click',startTimer); pauseBtn.addEventListener('click',pauseTimer); resetBtn.addEventListener('click',resetTimer);
-const fullscreenBtn=document.getElementById('fullscreenBtn'); fullscreenBtn.addEventListener('click',()=>{if(!document.fullscreenElement){document.documentElement.requestFullscreen();}else{document.exitFullscreen();}});
-document.addEventListener('keydown',e=>{if(e.key==='f'||e.key==='F'){e.preventDefault(); fullscreenBtn.click();} if(e.code==='Space'){e.preventDefault(); running?pauseTimer():startTimer();} if(e.key==='r'||e.key==='R'){resetTimer();}});
-
-// 日夜模式
-const themeBtn=document.getElementById('themeToggleBtn');
-themeBtn.addEventListener('click',()=>{const current=document.documentElement.getAttribute('data-theme')||'dark'; const next=current==='light'?'dark':'light'; document.documentElement.setAttribute('data-theme',next); localStorage.setItem('theme',next);});
-
-// 首次点击激活音频+通知+自动专注
-overlay.addEventListener('click',()=>{
-  if(Notification.permission!=='granted'){ Notification.requestPermission(); }
-  [alarmFocus,alarmShort,alarmLong].forEach(a=>{a.play().catch(()=>{}); a.pause(); a.currentTime=0;});
-  overlay.style.display='none'; startTimer();
+resetBtn.onclick = resetTimer;
+startBtn.onclick = startTimer;
+pauseBtn.onclick = pauseTimer;
+toggleThemeBtn.onclick = () => {
+  document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark';
+};
+modeButtons.forEach(btn => {
+  btn.addEventListener('click', () => switchMode(btn.dataset.mode, false));
 });
 
-document.addEventListener('DOMContentLoaded',()=>{ const saved=localStorage.getItem('theme')||'dark'; document.documentElement.setAttribute('data-theme',saved); updateDisplay(); cycleSidebar.textContent=cycleCount; minutesSidebar.textContent=totalMinutes;});
+// 清除统计
+document.getElementById('resetStats').addEventListener('click', () => {
+  if(confirm('确定要清除统计数据吗？')){
+    cycleCount = 0;
+    totalMinutes = 0;
+    localStorage.removeItem('cycleCount');
+    localStorage.removeItem('totalMinutes');
+    cycleSidebar.textContent = 0;
+    minutesSidebar.textContent = 0;
+  }
+});
+
+updateDisplay();
 </script>
 </body>
 </html>
