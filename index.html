@@ -43,6 +43,7 @@ body {
   padding: 10px;
   width: 100%;
   max-width: 450px;
+  flex: 1;
 }
 
 /* ===== Frosted Glass Card ===== */
@@ -64,9 +65,13 @@ body {
 /* ===== Sections ===== */
 .section { display:flex; align-items:center; justify-content:center; width:100%; margin:8px 0; }
 
-/* ===== Title ===== */
+/* ===== Title Section ===== */
 .title {
   flex-direction: column;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 .title h1 {
   font-family: 'Poppins', sans-serif;
@@ -82,10 +87,11 @@ body {
   margin-top: 6px;
   color: var(--text);
   display:flex; align-items:center; gap:10px;
+  justify-content:center;
 }
 
 /* ===== Mode Buttons ===== */
-.mode-buttons { gap:10px; }
+.mode-buttons { gap:10px; margin-bottom:10px;}
 .mode-buttons button {
   padding:12px 0;
   min-width:100px;
@@ -104,11 +110,11 @@ body {
 .mode-buttons button:active { transform: scale(0.95); }
 
 /* ===== Timer ===== */
-.time { font-size:72px; font-weight:bold; }
+.time { font-size:72px; font-weight:bold; flex: 2; display:flex; align-items:center; justify-content:center; }
 
 /* ===== Control Buttons ===== */
 .buttons {
-  display:flex; gap:10px; flex-wrap:wrap;
+  display:flex; gap:10px; flex-wrap:wrap; flex:1; justify-content:center;
 }
 .buttons button {
   padding:12px 0;
