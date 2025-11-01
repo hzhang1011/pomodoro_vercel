@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>番茄钟 · 完整版</title>
+<title>番茄钟 · 简化侧边栏</title>
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
@@ -83,40 +83,12 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
   font-size:14px;
   color:var(--text-muted);
 }
-.progress-circle{
-  width:100%;
-  max-width:200px;
-  margin:0 auto;
-}
-.progress-circle svg{
-  width:100%;
-  height:100%;
-  transform: rotate(-90deg);
-}
-.progress-circle path{
-  fill:none;
-  stroke-width:2.8;
-}
-.progress-circle .bg{
-  stroke: rgba(255,255,255,0.2);
-}
-.progress-circle .progress{
-  stroke: var(--accent-gradient);
-  stroke-dasharray: 0,100;
-  stroke-linecap: round;
-  transition: stroke-dasharray 0.5s;
-}
-.progress-circle .percentage{
-  fill: var(--text-main);
-  font-size:0.5em;
-  dominant-baseline: middle;
-}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>番茄钟 · 完整版</h1>
+    <h1>番茄钟 · 简化侧边栏</h1>
     <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
   </header>
 
@@ -143,19 +115,6 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
     <div class="sidebar-item">专注周期: <span id="cycleSidebar">0</span></div>
     <div class="sidebar-item">专注总分钟: <span id="minutesSidebar">0</span> 分钟</div>
 
-    <h2>专注进度</h2>
-    <div class="progress-circle" id="progressCircle">
-      <svg viewBox="0 0 36 36">
-        <path class="bg" d="M18 2.0845
-          a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"/>
-        <path class="progress" d="M18 2.0845
-          a 15.9155 15.9155 0 0 1 0 31.831
-          a 15.9155 15.9155 0 0 1 0 -31.831"/>
-        <text x="18" y="20.35" class="percentage" text-anchor="middle">0%</text>
-      </svg>
-    </div>
-
     <h2>小提示</h2>
     <div class="sidebar-item">喝水提醒 💧</div>
     <div class="sidebar-item">深呼吸 1 分钟 🌬️</div>
@@ -168,7 +127,6 @@ let running=false, timer=null, timeLeft=25*60;
 let cycleCount=0, totalMinutes=0;
 const modes={focus:25, short:5, long:15};
 let currentMode='focus';
-const goalMinutes=8*60;
 
 // -------------------- DOM --------------------
 const startBtn=document.getElementById('startBtn');
@@ -180,8 +138,6 @@ const cycleDisplay=document.getElementById('cycleCount');
 const cycleSidebar=document.getElementById('cycleSidebar');
 const minutesSidebar=document.getElementById('minutesSidebar');
 const modeButtons=document.querySelectorAll('.mode-btn');
-const progressPath=document.querySelector('.progress-circle .progress');
-const progressText=document.querySelector('.progress-circle .percentage');
 
 // -------------------- 更新显示 --------------------
 function updateDisplay(){
@@ -190,13 +146,6 @@ function updateDisplay(){
   statusLabel.textContent=currentMode==='focus'?`专注 (${modes.focus} 分钟)`:
                          currentMode==='short'?`短休息 (${modes.short} 分钟)`:
                          `长休息 (${modes.long} 分钟)`;
-}
-
-// -------------------- 更新圆环 --------------------
-function updateProgress(){
-  const percent=Math.min((totalMinutes/goalMinutes)*100,100);
-  progressPath.setAttribute('stroke-dasharray',`${percent},100`);
-  progressText.textContent=`${Math.round(percent)}%`;
 }
 
 // -------------------- 切换模式 --------------------
@@ -220,7 +169,6 @@ function tick(){
     cycleDisplay.textContent=cycleCount;
     cycleSidebar.textContent=cycleCount;
     minutesSidebar.textContent=totalMinutes;
-    updateProgress();
     clearInterval(timer); running=false;
     startBtn.style.display='inline-block';
     pauseBtn.style.display='none';
@@ -229,7 +177,7 @@ function tick(){
 
 function startTimer(){ if(!running){running=true; timer=setInterval(tick,1000); startBtn.style.display='none'; pauseBtn.style.display='inline-block'; } }
 function pauseTimer(){ if(running){running=false; clearInterval(timer); startBtn.style.display='inline-block'; pauseBtn.style.display='none'; } }
-function resetTimer(){ clearInterval(timer); running=false; timeLeft=modes[currentMode]*60; updateDisplay(); startBtn.style.display='inline-block'; pauseBtn.style.display='none'; updateProgress(); }
+function resetTimer(){ clearInterval(timer); running=false; timeLeft=modes[currentMode]*60; updateDisplay(); startBtn.style.display='inline-block'; pauseBtn.style.display='none'; }
 
 // -------------------- 按钮事件 --------------------
 startBtn.addEventListener('click', startTimer);
@@ -268,7 +216,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 // -------------------- 初始化 --------------------
 updateDisplay();
-updateProgress();
 cycleDisplay.textContent=cycleCount;
 cycleSidebar.textContent=cycleCount;
 minutesSidebar.textContent=totalMinutes;
