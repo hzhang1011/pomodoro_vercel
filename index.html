@@ -38,7 +38,7 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 450px;
+  max-width: 380px; /* 🔹 收窄宽度适配移动端 */
   flex: 1;
 }
 .card {
@@ -66,12 +66,12 @@ body {
   text-align: center;
 }
 .title h1 {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 700;
   margin: 0;
 }
 .title .cycles {
-  font-size: 16px;
+  font-size: 14px;
   margin-top: 6px;
   display: flex;
   align-items: center;
@@ -82,18 +82,18 @@ body {
 .buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
 }
 .mode-buttons button,
 .buttons button {
-  flex: 1;
+  flex: 1 1 45%;
   min-width: 100px;
-  max-width: 130px;
-  padding: 12px 0;
+  max-width: 120px;
+  padding: 10px 0;
   border-radius: 15px;
   border: none;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   background: var(--btn-bg);
   color: var(--btn-text);
@@ -108,13 +108,13 @@ body {
   transform: scale(0.95);
 }
 .time {
-  font-size: 72px;
+  font-size: 64px;
   font-weight: bold;
   text-align: center;
 }
 .heatmap {
   padding: 15px;
-  max-width: 450px;
+  max-width: 380px;
   width: 100%;
   border-radius: 25px;
   background: rgba(255, 255, 255, 0.15);
@@ -156,6 +156,15 @@ body {
   z-index: 9999;
   cursor: pointer;
 }
+@media (max-width: 420px) {
+  .title h1 { font-size: 28px; }
+  .time { font-size: 56px; }
+  .mode-buttons button, .buttons button {
+    font-size: 14px;
+    min-width: 90px;
+    padding: 9px 0;
+  }
+}
 </style>
 </head>
 <body>
@@ -165,7 +174,7 @@ body {
     <div class="section title">
       <h1>Pomodoro</h1>
       <div class="cycles">
-        <button id="resetStats" style="padding:4px 8px;font-size:14px;">Reset</button>
+        <button id="resetStats" style="padding:4px 8px;font-size:13px;">Reset</button>
         <span>Cycles: <span id="cycles">0</span></span>
       </div>
     </div>
@@ -286,7 +295,6 @@ function finishTimer(){
     modeButtons.forEach(x=>x.classList.remove('active'));
     document.querySelector(`[data-mode="${currentMode}"]`).classList.add('active');
     updateDisplay();
-    // heatmap update
     const day=(new Date()).getDay();
     heatmapData[day]=(heatmapData[day]||0)+1;
     localStorage.setItem('heatmapData',JSON.stringify(heatmapData));
