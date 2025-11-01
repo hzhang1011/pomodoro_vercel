@@ -5,156 +5,114 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>番茄钟 Pomodoro</title>
 <style>
-  :root {
-    --bg: #fefefe;
-    --text: #333;
-    --focus: #ff4d4f;
-    --short: #00bcd4;
-    --long: #4caf50;
-    --btn: #333;
-    --btn-text: #fff;
-  }
-  [data-theme="dark"] {
-    --bg: #1b1b1b;
-    --text: #f0f0f0;
-    --btn: #444;
-  }
+:root {
+  --bg: #fefefe;
+  --text: #333;
+  --focus: #ff4d4f;
+  --short: #00bcd4;
+  --long: #4caf50;
+  --btn: #333;
+  --btn-text: #fff;
+}
+[data-theme="dark"] {
+  --bg: #1b1b1b;
+  --text: #f0f0f0;
+  --btn: #444;
+}
 
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    transition: background 0.3s, color 0.3s;
-  }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.3s,color 0.3s;
+}
 
-  /* ===== 布局区域 ===== */
+/* ===== 容器 ===== */
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+@media (min-width:800px){
   .container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    flex-direction: row;
+    justify-content: space-around;
+    max-width: 1000px;
+    margin: 0 auto;
   }
+}
 
-  /* 桌面端布局优化 */
-  @media (min-width: 800px) {
-    .container {
-      flex-direction: row;
-      justify-content: space-around;
-      align-items: center;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-  }
+/* ===== 主内容 ===== */
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,0.03);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  min-width:280px;
+}
+.mode-buttons {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.mode-buttons button {
+  border:none;
+  border-radius:10px;
+  padding:10px 20px;
+  font-size:16px;
+  cursor:pointer;
+  color:var(--btn-text);
+  background:var(--btn);
+  transition:background 0.2s,transform 0.1s;
+}
+.mode-buttons button.active { background:var(--focus);}
+.mode-buttons button:active { transform:scale(0.96); }
 
-  /* ===== 主内容区 ===== */
-  .main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(0,0,0,0.03);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    min-width: 280px;
-  }
+.time { font-size:110px; font-weight:bold; margin:30px 0; user-select:none; }
 
-  .mode-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+.buttons { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.buttons button {
+  padding:12px 28px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-size:18px;
+  color:var(--btn-text);
+  background:var(--btn);
+  transition: transform 0.1s;
+}
+.buttons button:active { transform:scale(0.95); }
 
-  .mode-buttons button {
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    color: var(--btn-text);
-    background: var(--btn);
-    transition: background 0.2s, transform 0.1s;
-  }
+/* ===== 侧边栏 ===== */
+.sidebar {
+  text-align:center;
+  background:rgba(0,0,0,0.04);
+  border-radius:20px;
+  padding:20px;
+  margin-top:20px;
+  width:100%;
+}
+@media (min-width:800px){
+  .sidebar { width:260px; margin-top:0; }
+}
+#resetStats{ margin-top:15px;padding:8px 15px;border:none;border-radius:8px;background:#888;color:#fff;cursor:pointer; }
 
-  .mode-buttons button.active {
-    background: var(--focus);
-  }
-
-  .mode-buttons button:active {
-    transform: scale(0.96);
-  }
-
-  .time {
-    font-size: 110px;
-    font-weight: bold;
-    margin: 30px 0;
-    user-select: none;
-  }
-
-  .buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
-
-  .buttons button {
-    padding: 12px 28px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--btn-text);
-    background: var(--btn);
-    transition: transform 0.1s;
-  }
-  .buttons button:active { transform: scale(0.95); }
-
-  /* ===== 侧边栏（桌面右侧 / 手机底部） ===== */
-  .sidebar {
-    text-align: center;
-    background: rgba(0,0,0,0.04);
-    border-radius: 20px;
-    padding: 20px;
-    margin-top: 20px;
-    width: 100%;
-  }
-
-  @media (min-width: 800px) {
-    .sidebar {
-      width: 260px;
-      margin-top: 0;
-    }
-  }
-
-  #resetStats {
-    margin-top: 15px;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 8px;
-    background: #888;
-    color: #fff;
-    cursor: pointer;
-  }
-
-  #enableSoundOverlay {
-    position: fixed;
-    inset: 0;
-    background: #000c;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    cursor: pointer;
-    font-size: 22px;
-  }
+#enableSoundOverlay{
+  position:fixed; inset:0; background:#000c; color:#fff;
+  display:flex; align-items:center; justify-content:center; z-index:9999;
+  cursor:pointer; font-size:22px;
+}
 </style>
 </head>
 <body>
@@ -167,9 +125,7 @@
       <button data-mode="short">短休</button>
       <button data-mode="long">长休</button>
     </div>
-
     <div class="time" id="time">25:00</div>
-
     <div class="buttons">
       <button id="start">开始</button>
       <button id="pause" style="display:none;">暂停</button>
@@ -177,7 +133,6 @@
       <button id="toggleTheme">主题</button>
     </div>
   </div>
-
   <div class="sidebar">
     <p>专注周期：<span id="cycles">0</span></p>
     <p>累计专注：<span id="minutes">0</span> 分钟</p>
@@ -209,19 +164,30 @@ let timer=null;
 let running=false;
 let focusCount=0;
 let modes={focus:25,short:5,long:15};
-
-// 从 localStorage 读取统计
 let cycleCount=parseInt(localStorage.getItem('cycleCount'))||0;
 let totalMinutes=parseInt(localStorage.getItem('totalMinutes'))||0;
 cycleSidebar.textContent=cycleCount;
 minutesSidebar.textContent=totalMinutes;
 
-// 激活音频
+// 请求通知权限
+if('Notification' in window){
+  Notification.requestPermission();
+}
+
+// 激活所有音频
 overlay.addEventListener('click',()=>{
-  alarmFocus.play().catch(()=>{});
-  alarmFocus.pause();
+  [alarmFocus,alarmShort,alarmLong].forEach(a=>{
+    a.play().catch(()=>{});
+    a.pause();a.currentTime=0;
+  });
   overlay.style.display='none';
 });
+
+function notifyUser(title,text){
+  if(Notification.permission==='granted'){
+    new Notification(title,{body:text});
+  }
+}
 
 function updateDisplay(){
   const m=Math.floor(timeLeft/60);
@@ -230,17 +196,13 @@ function updateDisplay(){
 }
 
 function startTimer(){
-  if(running) return;
+  if(running)return;
   running=true;
-  startBtn.style.display='none';
-  pauseBtn.style.display='inline-block';
+  startBtn.style.display='none'; pauseBtn.style.display='inline-block';
   timer=setInterval(()=>{
     timeLeft--;
     updateDisplay();
-    if(timeLeft<=0){
-      clearInterval(timer);
-      finishTimer();
-    }
+    if(timeLeft<=0){ clearInterval(timer); finishTimer(); }
   },1000);
 }
 
@@ -263,24 +225,25 @@ function resetTimer(){
 
 function finishTimer(){
   if(currentMode==='focus'){
-    totalMinutes+=modes.focus;
-    focusCount++;
-    cycleCount++;
+    totalMinutes+=modes.focus; focusCount++; cycleCount++;
     localStorage.setItem('cycleCount',cycleCount);
     localStorage.setItem('totalMinutes',totalMinutes);
     cycleSidebar.textContent=cycleCount;
     minutesSidebar.textContent=totalMinutes;
-    alarmFocus.currentTime=0;alarmFocus.play();
-    if(focusCount%4===0){switchMode('long',true);}else{switchMode('short',true);}
-  }else{
-    if(currentMode==='short'){alarmShort.currentTime=0;alarmShort.play();}
-    else{alarmLong.currentTime=0;alarmLong.play();}
+    alarmFocus.currentTime=0; alarmFocus.play().catch(()=>{});
+    notifyUser('番茄钟','专注结束，请休息');
+    if(focusCount%4===0){ switchMode('long',true); }
+    else { switchMode('short',true); }
+  } else {
+    if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play().catch(()=>{});}
+    else { alarmLong.currentTime=0; alarmLong.play().catch(()=>{});}
     running=false;
     startBtn.style.display='inline-block';
     pauseBtn.style.display='none';
     currentMode='focus';
     timeLeft=modes.focus*60;
     modeButtons.forEach(b=>b.classList.toggle('active',b.dataset.mode==='focus'));
+    notifyUser('番茄钟','休息结束，请手动开始专注');
     updateDisplay();
   }
 }
@@ -298,13 +261,12 @@ startBtn.onclick=startTimer;
 pauseBtn.onclick=pauseTimer;
 toggleThemeBtn.onclick=()=>{document.body.dataset.theme=document.body.dataset.theme==='dark'?'':'dark';};
 modeButtons.forEach(btn=>btn.addEventListener('click',()=>switchMode(btn.dataset.mode,false)));
-
 document.getElementById('resetStats').addEventListener('click',()=>{
   if(confirm('确定要清除统计数据吗？')){
-    cycleCount=0;totalMinutes=0;
+    cycleCount=0; totalMinutes=0;
     localStorage.removeItem('cycleCount');
     localStorage.removeItem('totalMinutes');
-    cycleSidebar.textContent=0;minutesSidebar.textContent=0;
+    cycleSidebar.textContent=0; minutesSidebar.textContent=0;
   }
 });
 updateDisplay();
