@@ -3,12 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>番茄钟 · 改进版</title>
+<title>番茄钟</title>
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
   --card: rgba(255,255,255,0.1);
-  --accent-color: #ff6b6b;
   --accent-gradient: linear-gradient(90deg,#ff6b6b,#ff8c42);
   --text-main: #fff;
   --text-muted: #fff3b0;
@@ -96,7 +95,7 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
 <body>
 <div class="wrap">
   <header>
-    <h1>番茄钟 · 改进版</h1>
+    <h1>番茄钟 · 最终版</h1>
     <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
   </header>
 
@@ -217,6 +216,12 @@ function resetTimer(){
   updateDisplay();
   startBtn.style.display='inline-block';
   pauseBtn.style.display='none';
+
+  // 停止所有铃声
+  [alarmFocus, alarmShort, alarmLong].forEach(alarm=>{
+    alarm.pause();
+    alarm.currentTime=0;
+  });
 }
 
 function finishTimer(){
