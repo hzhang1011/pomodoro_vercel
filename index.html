@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>番茄钟 · 带铃声</title>
+<title>番茄钟 · 改进版</title>
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
   --card: rgba(255,255,255,0.1);
+  --accent-color: #ff6b6b;
   --accent-gradient: linear-gradient(90deg,#ff6b6b,#ff8c42);
   --text-main: #fff;
   --text-muted: #fff3b0;
@@ -60,10 +61,17 @@ h1{margin:0;font-size:18px;letter-spacing:0.2px}
 button.mode-btn{background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text-muted);padding:8px 12px;border-radius:10px;cursor:pointer}
 button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-active); box-shadow:0 6px 18px rgba(255,140,66,0.3)}
 .controls{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
-.btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
-.btn.start{background:var(--accent-gradient);color:white}
-.btn.pause{background:rgba(0,0,0,0.3);color:var(--text-main)}
-#fullscreenBtn,#themeToggleBtn{background:rgba(255,255,255,0.2);color:var(--text-main)}
+.btn{
+  padding:10px 14px;
+  border-radius:10px;
+  border:0;
+  cursor:pointer;
+  font-weight:600;
+  background: var(--accent-gradient);
+  color: #fff;
+  transition: transform 0.1s;
+}
+.btn:hover{ transform: translateY(-2px);}
 .small{font-size:13px;color:var(--text-muted)}
 
 .sidebar{
@@ -88,7 +96,7 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
 <body>
 <div class="wrap">
   <header>
-    <h1>番茄钟 · 带铃声</h1>
+    <h1>番茄钟 · 改进版</h1>
     <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
   </header>
 
@@ -120,7 +128,7 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
   </aside>
 </div>
 
-<!-- 🔔 添加音频文件 -->
+<!-- 音频文件 -->
 <audio id="alarmFocus" src="focus.mp3" preload="auto"></audio>
 <audio id="alarmShort" src="short.mp3" preload="auto"></audio>
 <audio id="alarmLong" src="long.mp3" preload="auto"></audio>
@@ -131,6 +139,7 @@ let running=false, timer=null, timeLeft=25*60;
 let cycleCount=0, totalMinutes=0;
 const modes={focus:25, short:5, long:15};
 let currentMode='focus';
+let startTime=null, endTime=null;
 
 // -------------------- DOM --------------------
 const startBtn=document.getElementById('startBtn');
@@ -142,7 +151,6 @@ const cycleSidebar=document.getElementById('cycleSidebar');
 const minutesSidebar=document.getElementById('minutesSidebar');
 const modeButtons=document.querySelectorAll('.mode-btn');
 
-// 音频元素
 const alarmFocus=document.getElementById('alarmFocus');
 const alarmShort=document.getElementById('alarmShort');
 const alarmLong=document.getElementById('alarmLong');
@@ -169,31 +177,62 @@ modeButtons.forEach(btn=>{
 });
 
 // -------------------- 计时 --------------------
-function tick(){
-  if(timeLeft>0){ 
-    timeLeft--; 
-    updateDisplay(); 
+function startTimer(){
+  if(!running){
+    running=true;
+    startTime=Date.now();
+    endTime=startTime + timeLeft*1000;
+    startBtn.style.display='none';
+    pauseBtn.style.display='inline-block';
+    timer=requestAnimationFrame(update);
   }
-  else{
-    if(currentMode==='focus') totalMinutes+=modes.focus;
-    cycleCount++; 
-    cycleSidebar.textContent=cycleCount;
-    minutesSidebar.textContent=totalMinutes;
+}
 
-    // 🔔 播放对应模式的铃声
-    if(currentMode==='focus'){ alarmFocus.currentTime=0; alarmFocus.play(); }
-    else if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play(); }
-    else if(currentMode==='long'){ alarmLong.currentTime=0; alarmLong.play(); }
+function update(){
+  if(!running) return;
+  const now = Date.now();
+  timeLeft = Math.max(0, Math.round((endTime - now)/1000));
+  updateDisplay();
+  if(timeLeft<=0){
+    finishTimer();
+  } else {
+    timer=requestAnimationFrame(update);
+  }
+}
 
-    clearInterval(timer); running=false;
+function pauseTimer(){
+  if(running){
+    running=false;
+    cancelAnimationFrame(timer);
+    timeLeft = Math.max(0, Math.round((endTime - Date.now())/1000));
     startBtn.style.display='inline-block';
     pauseBtn.style.display='none';
   }
 }
 
-function startTimer(){ if(!running){running=true; timer=setInterval(tick,1000); startBtn.style.display='none'; pauseBtn.style.display='inline-block'; } }
-function pauseTimer(){ if(running){running=false; clearInterval(timer); startBtn.style.display='inline-block'; pauseBtn.style.display='none'; } }
-function resetTimer(){ clearInterval(timer); running=false; timeLeft=modes[currentMode]*60; updateDisplay(); startBtn.style.display='inline-block'; pauseBtn.style.display='none'; }
+function resetTimer(){
+  cancelAnimationFrame(timer);
+  running=false;
+  timeLeft=modes[currentMode]*60;
+  updateDisplay();
+  startBtn.style.display='inline-block';
+  pauseBtn.style.display='none';
+}
+
+function finishTimer(){
+  if(currentMode==='focus') totalMinutes+=modes.focus;
+  cycleCount++; 
+  cycleSidebar.textContent=cycleCount;
+  minutesSidebar.textContent=totalMinutes;
+
+  if(currentMode==='focus'){ alarmFocus.currentTime=0; alarmFocus.play(); }
+  else if(currentMode==='short'){ alarmShort.currentTime=0; alarmShort.play(); }
+  else if(currentMode==='long'){ alarmLong.currentTime=0; alarmLong.play(); }
+
+  running=false;
+  startBtn.style.display='inline-block';
+  pauseBtn.style.display='none';
+}
 
 // -------------------- 按钮事件 --------------------
 startBtn.addEventListener('click', startTimer);
