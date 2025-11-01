@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>番茄钟 · 鲜艳全屏 + 日夜模式</title>
+<title>番茄钟 · 完整可倒计时 + 日夜模式 + 全屏</title>
 <style>
 :root {
   --bg-gradient: linear-gradient(135deg, #6dd5ed, #2193b0);
@@ -13,8 +13,6 @@
   --text-muted: #fff3b0;
   --mode-active: #ffd166;
 }
-
-/* 夜间模式 */
 [data-theme="dark"] {
   --bg-gradient: linear-gradient(135deg, #0f1724, #1e293b);
   --card: rgba(255,255,255,0.05);
@@ -23,8 +21,6 @@
   --text-muted: #94a3b8;
   --mode-active: #ffd166;
 }
-
-/* 白天模式 */
 [data-theme="light"] {
   --bg-gradient: linear-gradient(135deg, #a1c4fd, #c2e9fb);
   --card: rgba(255,255,255,0.8);
@@ -33,7 +29,6 @@
   --text-muted: #475569;
   --mode-active: #ff8c42;
 }
-
 *{box-sizing:border-box;}
 body{
   margin:0;
@@ -74,7 +69,7 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
 <body>
 <div class="wrap">
   <header>
-    <h1>番茄钟 · 鲜艳版</h1>
+    <h1>番茄钟 · 可倒计时版</h1>
     <div class="small">快捷键: 空格 开始/暂停 · R 重置 · F 全屏</div>
   </header>
 
@@ -98,16 +93,60 @@ button.mode-btn.active{border-color: var(--mode-active); color: var(--mode-activ
 </div>
 
 <script>
-// 模拟核心逻辑（示例）
 let running=false;
+let timer=null;
+let timeLeft=25*60; // 初始 25 分钟
+let cycleCount=0;
+const modes = { focus:25, short:5, long:15 };
+let currentMode='focus';
+
 const startBtn=document.getElementById('startBtn');
 const pauseBtn=document.getElementById('pauseBtn');
+const resetBtn=document.getElementById('resetBtn');
 const timeDisplay=document.getElementById('timeDisplay');
-startBtn.addEventListener('click',()=>{running=true;startBtn.style.display='none';pauseBtn.style.display='inline-block';});
-pauseBtn.addEventListener('click',()=>{running=false;startBtn.style.display='inline-block';pauseBtn.style.display='none';});
-document.addEventListener('keydown',e=>{
-  if(e.code==='Space'){e.preventDefault();running?pauseBtn.click():startBtn.click();}
-  if(e.key==='r'||e.key==='R'){timeDisplay.textContent='25:00';}
+const statusLabel=document.getElementById('statusLabel');
+const cycleDisplay=document.getElementById('cycleCount');
+const modeButtons=document.querySelectorAll('.mode-btn');
+
+// 更新显示
+function updateDisplay(){
+  let m=Math.floor(timeLeft/60);
+  let s=timeLeft%60;
+  timeDisplay.textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+  statusLabel.textContent= currentMode==='focus' ? `专注 (${modes.focus} 分钟)` :
+                         currentMode==='short'? `短休息 (${modes.short} 分钟)` :
+                         `长休息 (${modes.long} 分钟)`;
+}
+
+// 切换模式
+modeButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    modeButtons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode=btn.dataset.mode;
+    timeLeft=modes[currentMode]*60;
+    updateDisplay();
+    resetTimer();
+  });
+});
+
+// 开始/暂停/重置
+function tick(){
+  if(timeLeft>0){ timeLeft--; updateDisplay(); }
+  else{ cycleCount++; cycleDisplay.textContent=cycleCount; clearInterval(timer); running=false; startBtn.style.display='inline-block'; pauseBtn.style.display='none'; }
+}
+function startTimer(){ if(!running){running=true; timer=setInterval(tick,1000); startBtn.style.display='none'; pauseBtn.style.display='inline-block'; } }
+function pauseTimer(){ if(running){running=false; clearInterval(timer); startBtn.style.display='inline-block'; pauseBtn.style.display='none'; } }
+function resetTimer(){ clearInterval(timer); running=false; timeLeft=modes[currentMode]*60; updateDisplay(); startBtn.style.display='inline-block'; pauseBtn.style.display='none'; }
+
+startBtn.addEventListener('click', startTimer);
+pauseBtn.addEventListener('click', pauseTimer);
+resetBtn.addEventListener('click', resetTimer);
+
+// 快捷键
+document.addEventListener('keydown', e=>{
+  if(e.code==='Space'){ e.preventDefault(); running?pauseTimer():startTimer(); }
+  if(e.key==='r'||e.key==='R'){ resetTimer(); }
 });
 
 // --- 全屏功能 ---
@@ -124,16 +163,19 @@ document.addEventListener('fullscreenchange',()=>{fullscreenBtn.textContent=docu
 const themeBtn = document.getElementById('themeToggleBtn');
 function toggleTheme(){
   const current = document.documentElement.getAttribute('data-theme') || 'dark';
-  const next = current === 'light' ? 'dark' : 'light';
+  const next = current==='light'?'dark':'light';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('theme', next);
 }
-// 初始化主题
 document.addEventListener('DOMContentLoaded',()=>{
   const saved = localStorage.getItem('theme') || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
 });
 themeBtn.addEventListener('click', toggleTheme);
+
+// 初始化显示
+updateDisplay();
+cycleDisplay.textContent=cycleCount;
 </script>
 </body>
 </html>
