@@ -187,8 +187,10 @@ const alarmFocus=document.getElementById('alarmFocus');
 const alarmShort=document.getElementById('alarmShort');
 const alarmLong=document.getElementById('alarmLong');
 
-let currentMode='focus',timeLeft=25*60,timer=null,running=false,focusCount=0;
 let modes={focus:25,short:5,long:15};
+let currentMode=localStorage.getItem('currentMode')||'focus';
+let timeLeft=parseInt(localStorage.getItem('timeLeft'))||modes[currentMode]*60;
+let timer=null,running=false,focusCount=0;
 let cycleCount=parseInt(localStorage.getItem('cycleCount'))||0;
 cycleSpan.textContent=cycleCount;
 
@@ -201,6 +203,8 @@ if('Notification'in window)Notification.requestPermission();
 function updateDisplay(){
   const m=Math.floor(timeLeft/60),s=timeLeft%60;
   timeDisplay.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  localStorage.setItem('timeLeft',timeLeft);
+  localStorage.setItem('currentMode',currentMode);
 }
 function playSound(sound){sound.pause();sound.currentTime=0;sound.play().catch(()=>{});}
 function notify(txt){if(Notification.permission==='granted'){new Notification(txt);}else alert(txt);}
@@ -262,6 +266,7 @@ function finishTimer(){
   }
 }
 updateDisplay();
+document.querySelector(`[data-mode="${currentMode}"]`).classList.add('active');
 </script>
 </body>
 </html>
